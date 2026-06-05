@@ -1,5 +1,5 @@
 {
-  "name": "SteelMotion Landing Page",
-  "description": "A professional video generation and editing studio using Gemini Veo 3.1 models.",
+  "name": "SteelMotion 钢材视频生成工作台",
+  "description": "从钢材行业模板生成分镜、视频片段和可导出的产品宣传片。",
   "requestFramePermissions": []
 }

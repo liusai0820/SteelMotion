@@ -104,7 +104,7 @@ export const Editor: React.FC<EditorProps> = ({ initialMedia, initialClips, init
     aspectRatio: "16:9",
     useFastModel: true,
     provider: "vidu",
-    model: "vidu:viduq3-pro-fast",
+    model: "vidu:viduq3-pro",
     exportTemplateId: "steel-brand-standard",
   })
 

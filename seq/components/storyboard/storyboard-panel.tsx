@@ -190,11 +190,11 @@ export function StoryboardPanel({
             Video Model
           </label>
           <Select
-            value={panel.model || "vidu:viduq3-pro-fast"}
+            value={panel.model || "vidu:viduq3-pro"}
             onValueChange={(val) => onUpdate(panel.id, { model: val as VideoModel })}
           >
             <SelectTrigger className="h-7 text-xs">
-              <SelectValue placeholder="vidu:viduq3-pro-fast" />
+              <SelectValue placeholder="vidu:viduq3-pro" />
             </SelectTrigger>
             <SelectContent>
               {VIDEO_MODELS.map((model) => (

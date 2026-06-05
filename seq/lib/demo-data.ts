@@ -78,7 +78,7 @@ export const DEMO_FINAL_SEQUENCE = {
     aspectRatio: "16:9" as const,
     useFastModel: true,
     provider: "vidu" as const,
-    model: "vidu:viduq3-pro-fast" as const,
+    model: "vidu:viduq3-pro" as const,
     exportTemplateId: "steel-brand-standard",
   },
   panels: [

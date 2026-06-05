@@ -19,17 +19,17 @@ interface AppSidebarProps {
 }
 
 const NAV_ITEMS = [
-  { id: "home", href: "/", icon: Home, label: "Home", miniLabel: "Home", shortcut: "H" },
+  { id: "home", href: "/", icon: Home, label: "首页", miniLabel: "首页", shortcut: "H" },
   {
     id: "image-playground",
     href: "/image-playground",
     icon: ImageIcon,
-    label: "Image Playground",
-    miniLabel: "Images",
+    label: "图片生成",
+    miniLabel: "图片",
     shortcut: "I",
   },
-  { id: "storyboard", href: "/storyboard", icon: LayoutGrid, label: "Storyboard", miniLabel: "Boards", shortcut: "S" },
-  { id: "studio", href: "/timeline", icon: Film, label: "Video Timeline", miniLabel: "Timeline", shortcut: "T" },
+  { id: "storyboard", href: "/storyboard", icon: LayoutGrid, label: "分镜", miniLabel: "分镜", shortcut: "S" },
+  { id: "studio", href: "/timeline", icon: Film, label: "剪辑台", miniLabel: "剪辑", shortcut: "T" },
 ] as const
 
 const STUDIO_ITEMS: {
@@ -39,12 +39,12 @@ const STUDIO_ITEMS: {
   miniLabel: string
   shortcut?: string
 }[] = [
-  { id: "create", icon: PlusSquare, label: "Create", miniLabel: "Create", shortcut: "1" },
-  { id: "library", icon: Layers, label: "Library", miniLabel: "Library", shortcut: "2" },
-  { id: "storyboard", icon: LayoutGrid, label: "Storyboard", miniLabel: "Panels", shortcut: "3" },
-  { id: "transitions", icon: SlidersHorizontal, label: "Transitions", miniLabel: "Effects", shortcut: "4" },
-  { id: "inspector", icon: Info, label: "Inspector", miniLabel: "Details", shortcut: "5" },
-  { id: "settings", icon: Settings, label: "Settings", miniLabel: "Config", shortcut: "6" },
+  { id: "create", icon: PlusSquare, label: "生成", miniLabel: "生成", shortcut: "1" },
+  { id: "library", icon: Layers, label: "素材库", miniLabel: "素材", shortcut: "2" },
+  { id: "storyboard", icon: LayoutGrid, label: "分镜面板", miniLabel: "分镜", shortcut: "3" },
+  { id: "transitions", icon: SlidersHorizontal, label: "转场", miniLabel: "转场", shortcut: "4" },
+  { id: "inspector", icon: Info, label: "检查器", miniLabel: "详情", shortcut: "5" },
+  { id: "settings", icon: Settings, label: "设置", miniLabel: "设置", shortcut: "6" },
 ]
 
 export function AppSidebar({ activeView, isPanelOpen, onViewChange, onTogglePanel }: AppSidebarProps) {
@@ -190,7 +190,7 @@ export function AppSidebar({ activeView, isPanelOpen, onViewChange, onTogglePane
         <div className="border-t border-[var(--border-default)] p-3">
           <div className="flex flex-col items-center gap-0.5 text-center">
             <span className="text-sm font-semibold text-white">∞</span>
-            <span className="text-[10px] text-[var(--text-tertiary)]">Credits</span>
+            <span className="text-[10px] text-[var(--text-tertiary)]">额度</span>
           </div>
         </div>
       </aside>

@@ -10,6 +10,8 @@ export interface VideoGenerationScene {
   linkedImageUrl?: string
   duration: number
   aspectRatio: string
+  resolution?: "540p" | "720p" | "1080p"
+  audio?: boolean
 }
 
 export interface VideoProviderRuntime {
@@ -32,23 +34,23 @@ export const VIDEO_PROVIDERS: Provider[] = [
     id: "vidu",
     name: "Vidu",
     kind: "video",
-    activeModelId: "viduq3-pro-fast",
+    activeModelId: "viduq3-pro",
     status: "needs-api-key",
     models: [
       {
-        id: "viduq3-pro-fast",
-        name: "Vidu Q3 Pro Fast",
-        description: "快速工业分镜生成，支持文生视频、图生视频和首尾帧",
+        id: "viduq3-pro",
+        name: "Vidu Q3 Pro",
+        description: "默认 Q3 模型，1080p 静音工业分镜测试",
         supportsTextToVideo: true,
         supportsImageToVideo: true,
         supportsFirstLastFrame: true,
         costHint: "credits",
       },
       {
-        id: "viduq3-pro",
-        name: "Vidu Q3 Pro",
-        description: "质量优先，适合客户交付片段",
-        supportsTextToVideo: true,
+        id: "viduq3-pro-fast",
+        name: "Vidu Q3 Pro Fast",
+        description: "快速工业分镜生成，适合图生视频初筛",
+        supportsTextToVideo: false,
         supportsImageToVideo: true,
         supportsFirstLastFrame: true,
         costHint: "credits",
@@ -188,6 +190,19 @@ function getFalAspectRatio(aspectRatio: string): "auto" | "9:16" | "16:9" {
   return "auto"
 }
 
+function getDefaultViduModel(): string {
+  return process.env.VIDU_DEFAULT_MODEL || "viduq3-pro"
+}
+
+function getDefaultViduResolution(): "540p" | "720p" | "1080p" {
+  const value = process.env.VIDU_DEFAULT_RESOLUTION
+  return value === "540p" || value === "720p" || value === "1080p" ? value : "1080p"
+}
+
+function getDefaultViduAudio(): boolean {
+  return process.env.VIDU_DEFAULT_AUDIO === "true"
+}
+
 function createGenerationRecord({
   scene,
   provider,
@@ -256,7 +271,7 @@ async function callVidu(scene: VideoGenerationScene, provider: VideoProviderRunt
     throw new Error("VIDU_API_KEY is not configured")
   }
 
-  const baseUrl = process.env.VIDU_BASE_URL || "https://api.vidu.cn/ent/v2"
+  const baseUrl = process.env.VIDU_BASE_URL || "https://api.vidu.com/ent/v2"
   const headers = {
     "Content-Type": "application/json",
     Authorization: `Token ${apiKey}`,
@@ -266,7 +281,8 @@ async function callVidu(scene: VideoGenerationScene, provider: VideoProviderRunt
     model: provider.model,
     prompt: scene.prompt.trim(),
     duration: Math.max(1, Math.round(scene.duration || 5)),
-    resolution: "720p",
+    resolution: scene.resolution || getDefaultViduResolution(),
+    audio: scene.audio ?? getDefaultViduAudio(),
   }
 
   const endpoint = scene.imageUrl
@@ -382,7 +398,7 @@ export function splitProviderModel(model?: string, providerId?: string): VideoPr
     return { id: "fal", model: model || "fal-ai/minimax-video" }
   }
 
-  return { id: "vidu", model: model || "viduq3-pro-fast" }
+  return { id: "vidu", model: model || getDefaultViduModel() }
 }
 
 export async function generateVideo(

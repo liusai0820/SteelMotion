@@ -9,21 +9,17 @@ import { DeploymentNotice } from "@/seq/components/deployment-notice"
 import "./globals.css"
 
 export const metadata: Metadata = {
-  title: "SteelMotion - Steel Industry Storyboard to Video Studio",
+  title: "SteelMotion - 钢材视频生成工作台",
   description:
-    "Generate steel industry storyboards, video clips, and export-ready product sequences with provider-swappable AI video models.",
+    "从钢材行业模板生成分镜、视频片段和可导出的产品宣传片。",
   keywords: [
     "SteelMotion",
-    "steel video generation",
-    "steel industry marketing",
-    "storyboard to video",
-    "AI video generation",
-    "magnetic timeline",
-    "video editor",
-    "Veo 3.1",
-    "fal.ai",
-    "video sequence",
-    "AI filmmaking",
+    "钢材视频生成",
+    "钢铁行业宣传片",
+    "分镜生成",
+    "AI 视频生成",
+    "Vidu",
+    "视频剪辑",
   ],
   authors: [{ name: "v0" }],
   creator: "v0",
@@ -31,17 +27,15 @@ export const metadata: Metadata = {
   generator: "v0.app",
   openGraph: {
     type: "website",
-    locale: "en_US",
-    title: "SteelMotion - Steel Industry Storyboard to Video Studio",
-    description:
-      "Generate steel industry storyboards, video clips, and export-ready product sequences with AI video models.",
+    locale: "zh_CN",
+    title: "SteelMotion - 钢材视频生成工作台",
+    description: "从钢材行业模板生成分镜、视频片段和可导出的产品宣传片。",
     siteName: "SteelMotion",
   },
   twitter: {
     card: "summary_large_image",
-    title: "SteelMotion - Steel Industry Storyboard to Video Studio",
-    description:
-      "Generate steel industry storyboards, video clips, and export-ready product sequences with AI video models.",
+    title: "SteelMotion - 钢材视频生成工作台",
+    description: "从钢材行业模板生成分镜、视频片段和可导出的产品宣传片。",
     creator: "@vercel",
   },
   robots: {
@@ -71,7 +65,7 @@ export default function RootLayout({
 }>) {
   return (
     <html
-      lang="en"
+      lang="zh-CN"
       suppressHydrationWarning
       style={{ backgroundColor: "#000000" }}
     >

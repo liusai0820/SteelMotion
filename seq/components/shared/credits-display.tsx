@@ -30,7 +30,7 @@ export function CreditsDisplay({ credits, variant = "compact", className }: Cred
     >
       <Sparkles className="h-4 w-4 text-pink-400" />
       <span className="text-sm font-medium text-white">{displayValue}</span>
-      <span className="text-xs text-neutral-500">Credits</span>
+      <span className="text-xs text-neutral-500">额度</span>
     </div>
   )
 }

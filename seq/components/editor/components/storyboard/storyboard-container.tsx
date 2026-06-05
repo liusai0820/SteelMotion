@@ -70,7 +70,7 @@ export function StoryboardContainer({
     aspectRatio: "16:9",
     useFastModel: true,
     provider: "vidu",
-    model: "vidu:viduq3-pro-fast",
+    model: "vidu:viduq3-pro",
   })
   const [isEnhancingMaster, setIsEnhancingMaster] = useState(false)
 
@@ -90,8 +90,8 @@ export function StoryboardContainer({
         duration: (initialDurations?.[index] || 5) as 5 | 3 | 8,
         videoUrl: savedVideoUrls[index],
         model: initialLinkedPanelData?.[index]
-          ? ("vidu:viduq3-pro-fast" as VideoModel)
-          : ("vidu:viduq3-pro-fast" as VideoModel),
+          ? ("vidu:viduq3-pro" as VideoModel)
+          : ("vidu:viduq3-pro" as VideoModel),
         isGenerating: false,
       }))
       setPanels(newPanels)
@@ -218,8 +218,8 @@ export function StoryboardContainer({
           prompt: demoPanel.prompt,
           duration: demoPanel.duration,
           model: panel.linkedImageUrl
-            ? ("vidu:viduq3-pro-fast" as VideoModel)
-            : ("vidu:viduq3-pro-fast" as VideoModel),
+            ? ("vidu:viduq3-pro" as VideoModel)
+            : ("vidu:viduq3-pro" as VideoModel),
           videoUrl: demoPanel.videoUrl,
         }
       }

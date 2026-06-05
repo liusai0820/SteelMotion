@@ -2,6 +2,8 @@ import { NextResponse } from "next/server"
 
 import { generateVideo, splitProviderModel, type VideoGenerationScene } from "@/seq/lib/steelmotion/providers"
 
+type VideoResolution = "540p" | "720p" | "1080p"
+
 interface GenerateVideoBody {
   prompt: string
   imageUrl?: string
@@ -9,6 +11,8 @@ interface GenerateVideoBody {
   duration: number
   aspectRatio: string
   useFastModel: boolean
+  resolution: VideoResolution
+  audio: boolean
   model?: string
   provider?: string
 }
@@ -19,6 +23,10 @@ function isRecord(value: unknown): value is Record<string, unknown> {
 
 function asOptionalString(value: unknown): string | undefined {
   return typeof value === "string" && value.trim().length > 0 ? value : undefined
+}
+
+function parseResolution(value: unknown): VideoResolution {
+  return value === "540p" || value === "720p" || value === "1080p" ? value : "1080p"
 }
 
 function getErrorMessage(error: unknown): string {
@@ -36,6 +44,7 @@ function parseRequestBody(body: unknown): GenerateVideoBody | null {
   const duration = typeof body.duration === "number" && Number.isFinite(body.duration) ? body.duration : 5
   const aspectRatio = asOptionalString(body.aspectRatio) || "16:9"
   const useFastModel = typeof body.useFastModel === "boolean" ? body.useFastModel : true
+  const audio = typeof body.audio === "boolean" ? body.audio : false
 
   return {
     prompt,
@@ -44,6 +53,8 @@ function parseRequestBody(body: unknown): GenerateVideoBody | null {
     duration,
     aspectRatio,
     useFastModel,
+    resolution: parseResolution(body.resolution),
+    audio,
     model: asOptionalString(body.model),
     provider: asOptionalString(body.provider),
   }
@@ -94,6 +105,8 @@ export async function POST(request: Request) {
       linkedImageUrl: body.linkedImageUrl,
       duration: body.duration,
       aspectRatio: body.aspectRatio,
+      resolution: body.resolution,
+      audio: body.audio,
     }
 
     const provider = {
