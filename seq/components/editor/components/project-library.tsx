@@ -76,7 +76,7 @@ const LibraryItem = memo(function LibraryItem({
             isSelected ? "text-white" : "text-neutral-400 group-hover:text-neutral-200"
           }`}
         >
-          {item.prompt || (item.type === "audio" ? "Audio Track" : "Untitled Media")}
+          {item.prompt || (item.type === "audio" ? "音频轨道" : "未命名素材")}
         </p>
 
         <div className="flex items-center justify-between">
@@ -90,14 +90,14 @@ const LibraryItem = memo(function LibraryItem({
           <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
             <button
               className="p-1.5 hover:bg-red-900/30 rounded text-neutral-600 hover:text-red-400 transition-all transform hover:scale-110"
-              title="Remove from Library"
+              title="从素材库移除"
               onClick={handleRemove}
             >
               <TrashIcon className="w-3 h-3" />
             </button>
             <button
               className="p-1.5 bg-neutral-800 hover:bg-[var(--accent-primary)] hover:text-accent-text-white rounded text-neutral-500 transition-all transform hover:scale-110"
-              title="Add to Timeline"
+              title="加入时间线"
               onClick={handleAddToTimeline}
             >
               <svg
@@ -173,7 +173,7 @@ export const ProjectLibrary = memo(function ProjectLibrary({
       onDragLeave={handleDragLeave}
     >
       <div className="p-3 border-b border-[var(--border-default)] flex items-center justify-between shrink-0">
-        <span className="text-sm font-medium text-white">Project Media</span>
+        <span className="text-sm font-medium text-white">项目素材</span>
         <button
           onClick={onClose}
           className="p-1.5 hover:bg-[var(--hover-overlay)] rounded-lg text-neutral-500 hover:text-white transition-colors"
@@ -191,7 +191,7 @@ export const ProjectLibrary = memo(function ProjectLibrary({
               filter === f ? "bg-white text-black" : "text-neutral-500 hover:text-white hover:bg-[var(--hover-overlay)]"
             }`}
           >
-            {f.charAt(0).toUpperCase() + f.slice(1)}
+            {{ all: "全部", video: "视频", image: "图片", audio: "音频" }[f]}
           </button>
         ))}
       </div>
@@ -199,12 +199,12 @@ export const ProjectLibrary = memo(function ProjectLibrary({
       <div className="flex-1 overflow-y-auto custom-scrollbar p-2 space-y-1">
         {filteredMedia.length === 0 ? (
           <div className="flex flex-col items-center justify-center h-full text-neutral-500 text-xs gap-3 p-4">
-            <p className="text-neutral-400">No media yet</p>
+            <p className="text-neutral-400">还没有素材</p>
             <button
               onClick={() => fileInputRef.current?.click()}
               className="px-4 py-2 bg-[var(--hover-overlay)] hover:bg-[var(--active-overlay)] rounded-lg text-neutral-300 hover:text-accent-text-white transition-colors font-medium"
             >
-              Import Media
+              导入素材
             </button>
           </div>
         ) : (
@@ -234,7 +234,7 @@ export const ProjectLibrary = memo(function ProjectLibrary({
           onClick={() => fileInputRef.current?.click()}
           className="text-[11px] text-neutral-400 hover:text-white px-3 py-1.5 bg-[var(--hover-overlay)] hover:bg-[var(--active-overlay)] rounded-lg transition-colors font-medium"
         >
-          + Import
+          + 导入
         </button>
         <input
           type="range"
@@ -248,7 +248,7 @@ export const ProjectLibrary = memo(function ProjectLibrary({
 
       {isDragOver && (
         <div className="absolute inset-0 bg-[var(--accent-primary)]/20 flex items-center justify-center pointer-events-none z-50 backdrop-blur-sm">
-          <p className="text-white font-medium">Drop to import</p>
+          <p className="text-white font-medium">拖到这里导入</p>
         </div>
       )}
     </div>

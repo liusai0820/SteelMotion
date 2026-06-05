@@ -2,11 +2,10 @@ import Editor from "@/seq/components/editor/app"
 import { Metadata } from "next"
 
 export const metadata: Metadata = {
-  title: "Timeline Editor - SteelMotion",
-  description: "Professional magnetic timeline editor for steel industry video sequences",
+  title: "剪辑台 - SteelMotion",
+  description: "用于钢材行业视频片段筛选、编排和导出的时间线剪辑台。",
 }
 
-// The demo parameter is handled inside TimelineEditor via useSearchParams
 export default function TimelinePage() {
   return <Editor />
 }

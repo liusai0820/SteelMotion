@@ -59,7 +59,7 @@ export function StoryboardPanel({
         }),
       })
 
-      if (!response.ok) throw new Error("Failed to enhance")
+      if (!response.ok) throw new Error("优化失败")
 
       const data = await response.json()
       if (data.enhancedPrompt) {
@@ -78,12 +78,12 @@ export function StoryboardPanel({
       <div className="flex items-center justify-between p-2 border-b border-border bg-background">
         <div className="flex items-center gap-2">
           <Badge variant="outline" className="text-xs">
-            Panel {index + 1}
+            分镜 {index + 1}
           </Badge>
           {isTransitionPanel && (
             <Badge variant="secondary" className="text-xs">
               <Link2 className="w-3 h-3" />
-              First-Last
+              首尾帧
             </Badge>
           )}
         </div>
@@ -143,28 +143,36 @@ export function StoryboardPanel({
             {isTransitionPanel && panel.linkedImageUrl ? (
               <div className="w-full h-full flex gap-0.5">
                 <div className="relative w-1/2 h-full">
-                  <Image src={panel.imageUrl || "/placeholder.svg"} alt="First frame" fill className="object-contain" />
+                  <Image
+                    src={panel.imageUrl || "/placeholder.svg"}
+                    alt="首帧"
+                    fill
+                    priority={index < 3}
+                    className="object-contain"
+                  />
                   <div className="absolute bottom-1 left-1 bg-black/70 px-2 py-0.5 rounded text-[10px] text-white/80">
-                    First
+                    首帧
                   </div>
                 </div>
                 <div className="relative w-1/2 h-full">
                   <Image
                     src={panel.linkedImageUrl || "/placeholder.svg"}
-                    alt="Last frame"
+                    alt="尾帧"
                     fill
+                    priority={index < 3}
                     className="object-contain"
                   />
                   <div className="absolute bottom-1 right-1 bg-black/70 px-2 py-0.5 rounded text-[10px] text-white/80">
-                    Last
+                    尾帧
                   </div>
                 </div>
               </div>
             ) : (
               <Image
                 src={panel.imageUrl || "/placeholder.svg"}
-                alt={`Panel ${index + 1}`}
+                alt={`分镜 ${index + 1}`}
                 fill
+                priority={index < 3}
                 className="object-contain"
               />
             )}
@@ -178,7 +186,7 @@ export function StoryboardPanel({
         {panel.isGenerating && (
           <div className="absolute inset-0 z-10 flex flex-col items-center justify-center bg-black/60 backdrop-blur-[1px]">
             <Loader2 className="h-8 w-8 text-primary animate-spin mb-2" />
-            <span className="text-xs text-white/80 font-medium animate-pulse">Generating Video...</span>
+            <span className="text-xs text-white/80 font-medium animate-pulse">正在生成视频...</span>
           </div>
         )}
       </div>
@@ -187,7 +195,7 @@ export function StoryboardPanel({
       <div className="p-3 flex flex-col gap-3 bg-card flex-1">
         <div className="space-y-1.5">
           <label className="text-[10px] uppercase tracking-wider text-muted-foreground font-semibold">
-            Video Model
+            视频模型
           </label>
           <Select
             value={panel.model || "vidu:viduq3-pro"}
@@ -206,15 +214,15 @@ export function StoryboardPanel({
           </Select>
           <p className="text-[9px] text-muted-foreground/50 leading-tight">
             {isTransitionPanel
-              ? "Use a first-last-frame capable provider model for cleaner transitions"
-              : "Vidu models are the SteelMotion default; fal models remain available for compatibility"}
+              ? "首尾帧片段建议使用支持首尾帧的模型"
+              : "默认使用 Vidu Q3 Pro，保留其它模型用于后续切换"}
           </p>
         </div>
 
         <div className="space-y-1.5 flex-1">
           <div className="flex items-center justify-between">
             <label className="text-[10px] uppercase tracking-wider text-muted-foreground font-semibold">
-              Video Prompt
+              视频 Prompt
             </label>
             <div className="flex items-center gap-2">
               <Button
@@ -229,9 +237,9 @@ export function StoryboardPanel({
                 ) : (
                   <Sparkles className="h-3 w-3 mr-1" />
                 )}
-                Enhance
+                优化
               </Button>
-              <span className="text-[10px] text-muted-foreground/50">{panel.prompt.length} chars</span>
+              <span className="text-[10px] text-muted-foreground/50">{panel.prompt.length} 字</span>
             </div>
           </div>
           <Textarea
@@ -239,15 +247,15 @@ export function StoryboardPanel({
             onChange={(e) => onUpdate(panel.id, { prompt: e.target.value })}
             placeholder={
               isTransitionPanel
-                ? "Describe the transition effect (e.g. 'Smooth zoom out revealing the wider scene')"
-                : "Describe the motion for this shot (e.g. 'Zoom in slowly'). Use 'Enhance' to combine with Master Context."
+                ? "描述首尾帧之间的运动，例如：镜头从钢卷推进到产线。"
+                : "描述这个镜头如何运动，例如：缓慢推进、轻微横移、突出金属反光。"
             }
             className="h-full min-h-[100px] text-xs resize-none bg-[var(--surface-2)] border-[var(--border-default)] focus:border-[var(--accent-muted)] text-neutral-200 placeholder:text-neutral-500 font-mono"
           />
         </div>
 
         <div className="space-y-1.5">
-          <label className="text-[10px] uppercase tracking-wider text-muted-foreground font-semibold">Duration</label>
+          <label className="text-[10px] uppercase tracking-wider text-muted-foreground font-semibold">时长</label>
           <Select
             value={panel.duration?.toString() || "5"}
             onValueChange={(val) => onUpdate(panel.id, { duration: Number.parseInt(val) as 3 | 5 | 8 })}
@@ -256,9 +264,9 @@ export function StoryboardPanel({
               <SelectValue />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="3">3 seconds</SelectItem>
-              <SelectItem value="5">5 seconds</SelectItem>
-              <SelectItem value="8">8 seconds</SelectItem>
+              <SelectItem value="3">3 秒</SelectItem>
+              <SelectItem value="5">5 秒</SelectItem>
+              <SelectItem value="8">8 秒</SelectItem>
             </SelectContent>
           </Select>
         </div>
@@ -272,7 +280,7 @@ export function StoryboardPanel({
               disabled={panel.isGenerating}
             >
               <RefreshCw className="mr-2 h-3.5 w-3.5" />
-              Regenerate Video
+              重新生成
             </Button>
           ) : (
             <Button
@@ -281,12 +289,12 @@ export function StoryboardPanel({
               disabled={panel.isGenerating || !panel.prompt.trim()}
             >
               <Film className="mr-2 h-3.5 w-3.5" />
-              Generate Video
+              生成当前片段
             </Button>
           )}
         </div>
 
-        {panel.error && <div className="text-[10px] text-destructive mt-1 px-1">Error: {panel.error}</div>}
+        {panel.error && <div className="text-[10px] text-destructive mt-1 px-1">错误：{panel.error}</div>}
       </div>
     </div>
   )

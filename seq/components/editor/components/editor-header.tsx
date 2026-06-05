@@ -66,7 +66,7 @@ export const EditorHeader = memo(function EditorHeader({
               </button>
             </TooltipTrigger>
             <TooltipContent side="bottom" className="text-xs">
-              {visible ? "Hide Sidebar" : "Show Sidebar"}
+              {visible ? "隐藏侧栏" : "显示侧栏"}
             </TooltipContent>
           </Tooltip>
 
@@ -87,7 +87,7 @@ export const EditorHeader = memo(function EditorHeader({
                   className="flex items-center gap-1.5 px-3 py-1.5 text-sm text-[var(--text-secondary)] hover:text-white hover:bg-[var(--hover-overlay)] rounded-lg transition-colors"
                 >
                   <FolderOpenIcon className="w-4 h-4" />
-                  <span className="text-xs">File</span>
+                  <span className="text-xs">文件</span>
                   <svg
                     width="10"
                     height="10"
@@ -102,7 +102,7 @@ export const EditorHeader = memo(function EditorHeader({
                 </button>
               </TooltipTrigger>
               <TooltipContent side="bottom" className="text-xs">
-                File Menu
+                文件菜单
               </TooltipContent>
             </Tooltip>
 
@@ -117,7 +117,7 @@ export const EditorHeader = memo(function EditorHeader({
                   className="w-full px-3 py-2 text-left text-sm text-[var(--text-secondary)] hover:bg-[var(--hover-overlay)] hover:text-white flex items-center gap-2 disabled:opacity-50"
                 >
                   <SaveIcon className={`w-4 h-4 ${isSaving ? "animate-pulse" : ""}`} />
-                  Save Project
+                  保存项目
                   <span className="ml-auto text-xs text-[var(--text-tertiary)]">⌘S</span>
                 </button>
                 <button
@@ -128,7 +128,7 @@ export const EditorHeader = memo(function EditorHeader({
                   className="w-full px-3 py-2 text-left text-sm text-[var(--text-secondary)] hover:bg-[var(--hover-overlay)] hover:text-white flex items-center gap-2"
                 >
                   <FolderOpenIcon className="w-4 h-4" />
-                  Open Project
+                  打开项目
                   <span className="ml-auto text-xs text-[var(--text-tertiary)]">⌘O</span>
                 </button>
                 <div className="h-px bg-[var(--border-default)] my-1" />
@@ -143,7 +143,7 @@ export const EditorHeader = memo(function EditorHeader({
                     <path d="M14.5 4h-5L7 7H4a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2h-3l-2.5-3z" />
                     <circle cx="12" cy="13" r="3" />
                   </svg>
-                  Load Demo Project
+                  载入演示项目
                 </button>
               </div>
             )}
@@ -162,7 +162,7 @@ export const EditorHeader = memo(function EditorHeader({
                 </button>
               </TooltipTrigger>
               <TooltipContent side="bottom" className="text-xs">
-                Undo <span className="text-[var(--text-tertiary)]">(⌘Z)</span>
+                撤销 <span className="text-[var(--text-tertiary)]">(⌘Z)</span>
               </TooltipContent>
             </Tooltip>
 
@@ -177,7 +177,7 @@ export const EditorHeader = memo(function EditorHeader({
                 </button>
               </TooltipTrigger>
               <TooltipContent side="bottom" className="text-xs">
-                Redo <span className="text-[var(--text-tertiary)]">(⌘⇧Z)</span>
+                重做 <span className="text-[var(--text-tertiary)]">(⌘⇧Z)</span>
               </TooltipContent>
             </Tooltip>
           </div>
@@ -196,11 +196,11 @@ export const EditorHeader = memo(function EditorHeader({
                   <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3" />
                   <path d="M12 17h.01" />
                 </svg>
-                Learn
+                快捷键
               </button>
             </TooltipTrigger>
             <TooltipContent side="bottom" className="text-xs">
-              Keyboard Shortcuts
+              快捷键说明
             </TooltipContent>
           </Tooltip>
 
@@ -211,11 +211,11 @@ export const EditorHeader = memo(function EditorHeader({
                 className="flex items-center gap-1.5 px-3 py-1.5 text-white bg-[var(--active-overlay)] hover:bg-[var(--hover-overlay)] border border-[var(--border-emphasis)] rounded-full text-xs font-medium transition-colors"
               >
                 <DownloadIcon className="w-3.5 h-3.5" />
-                Export
+                导出
               </button>
             </TooltipTrigger>
             <TooltipContent side="bottom" className="text-xs">
-              Export Project <span className="text-[var(--text-tertiary)]">(⌘E)</span>
+              导出项目 <span className="text-[var(--text-tertiary)]">(⌘E)</span>
             </TooltipContent>
           </Tooltip>
         </div>

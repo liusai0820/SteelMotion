@@ -33,7 +33,7 @@ function isRecord(value: unknown): value is Record<string, unknown> {
 function getErrorMessage(value: unknown): string {
   if (value instanceof Error) return value.message
   if (isRecord(value) && typeof value.error === "string") return value.error
-  return "Failed to generate video"
+  return "视频生成失败"
 }
 
 function parseVideoGenerationResponse(value: unknown): VideoGenerationResponse {
@@ -212,7 +212,7 @@ export function StoryboardContainer({
           costLog: result.costLog,
           generationStatus: result.status || "succeeded",
         })
-        toast.success("Video generated successfully!")
+        toast.success("视频生成成功")
       } else if (result.status === "queued" || result.status === "running") {
         updatePanel(id, {
           isGenerating: false,
@@ -220,9 +220,9 @@ export function StoryboardContainer({
           costLog: result.costLog,
           generationStatus: result.status,
         })
-        toast.info(`Generation ${result.status}`)
+        toast.info(`生成任务状态：${result.status}`)
       } else {
-        throw new Error("No video URL in response")
+        throw new Error("返回结果里没有视频地址")
       }
     } catch (error: unknown) {
       console.error("Video generation failed:", error)
@@ -231,7 +231,7 @@ export function StoryboardContainer({
         generationStatus: "failed",
         error: getErrorMessage(error),
       })
-      toast.error("Video generation failed")
+      toast.error("视频生成失败")
     }
   }
 
@@ -239,11 +239,11 @@ export function StoryboardContainer({
     const pendingPanels = panels.filter((p) => !p.videoUrl && !p.isGenerating && p.prompt.trim().length > 0)
 
     if (pendingPanels.length === 0) {
-      toast.info("No ready panels to generate (check prompts)")
+      toast.info("没有可生成的分镜，请先确认 prompt")
       return
     }
 
-    toast.info(`Starting generation for ${pendingPanels.length} panels...`)
+    toast.info(`开始生成 ${pendingPanels.length} 个分镜...`)
 
     await Promise.all(pendingPanels.map((p) => generateVideo(p.id)))
   }
@@ -283,7 +283,7 @@ export function StoryboardContainer({
       ),
     ).length
 
-    toast.success(`Demo data loaded for ${matchedCount} panel${matchedCount !== 1 ? "s" : ""} with videos!`)
+    toast.success(`已载入 ${matchedCount} 个示例分镜`)
   }
 
   if (panels.length === 0) {
@@ -292,9 +292,9 @@ export function StoryboardContainer({
         <div className="h-12 w-12 rounded-full flex items-center justify-center mb-4 bg-muted">
           <Layers className="h-6 w-6 text-muted-foreground" />
         </div>
-        <h3 className="text-sm font-medium text-foreground mb-1">Empty Storyboard</h3>
+        <h3 className="text-sm font-medium text-foreground mb-1">还没有分镜</h3>
         <p className="text-xs text-muted-foreground max-w-xs mb-4">
-          Add generated images from above to create a video storyboard powered by Veo.
+          先添加图片，再生成对应的视频片段。
         </p>
       </div>
     )
@@ -311,9 +311,9 @@ export function StoryboardContainer({
         <div className="flex-shrink-0 h-12 px-4 flex items-center justify-between border-b border-border">
           <div className="flex items-center gap-2">
             <Film className="h-4 w-4 text-muted-foreground" />
-            <span className="text-sm font-medium text-foreground">Video Storyboard</span>
+            <span className="text-sm font-medium text-foreground">视频分镜</span>
           </div>
-          <span className="text-xs px-2 py-0.5 rounded bg-muted text-muted-foreground">{panels.length} Panels</span>
+          <span className="text-xs px-2 py-0.5 rounded bg-muted text-muted-foreground">{panels.length} 个分镜</span>
         </div>
 
         <div className="flex-1 overflow-y-auto p-4 space-y-4">
@@ -322,10 +322,9 @@ export function StoryboardContainer({
             <div className="text-xs p-3 flex items-start gap-2 rounded-lg bg-muted text-muted-foreground">
               <Layers className="h-3.5 w-3.5 text-muted-foreground mt-0.5 shrink-0" />
               <div>
-                <p className="font-medium text-foreground mb-1">Your Storyboard is Ready</p>
+                <p className="font-medium text-foreground mb-1">分镜已就绪</p>
                 <p>
-                  Your selected panels are ready. You can now add video prompts manually, use the "Load Demo Data"
-                  button to pre-fill example data, or enhance prompts using the master description and AI.
+                  你可以手动补充每个镜头的 motion prompt，也可以直接使用当前测试素材生成视频。
                 </p>
               </div>
             </div>
@@ -333,12 +332,12 @@ export function StoryboardContainer({
 
           <div className="rounded-lg bg-muted p-4 space-y-2">
             <label className="text-[10px] uppercase tracking-wider text-muted-foreground font-semibold">
-              Master Clip Description / Story Context
+              整体视频说明 / 风格上下文
             </label>
             <Textarea
               value={masterDescription}
               onChange={(e) => setMasterDescription(e.target.value)}
-              placeholder="Describe the overall scene, style, or story context (e.g. 'A flashback scene in Ratatouille, warm cinematic lighting, emotional tone'). This will be used to enhance individual shot prompts."
+              placeholder="描述整体风格，例如：真实工业质感、冷色灯光、慢速推进、突出钢材表面反光和应用场景。"
               className="min-h-[100px] text-xs resize-none rounded-lg"
             />
           </div>
@@ -347,12 +346,12 @@ export function StoryboardContainer({
             <div className="flex items-center gap-2 mb-3">
               <Settings2 className="h-3.5 w-3.5 text-muted-foreground" />
               <label className="text-[10px] uppercase tracking-wider text-muted-foreground font-semibold">
-                Video Configuration
+                视频生成配置
               </label>
             </div>
             <div className="grid grid-cols-1 gap-3">
               <div className="space-y-1.5">
-                <label className="text-[10px] text-muted-foreground font-medium">Aspect Ratio</label>
+                <label className="text-[10px] text-muted-foreground font-medium">画幅</label>
                 <Select
                   value={videoConfig.aspectRatio}
                   onValueChange={(val) => setVideoConfig({ ...videoConfig, aspectRatio: val as "16:9" | "9:16" })}
@@ -361,13 +360,13 @@ export function StoryboardContainer({
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="16:9">16:9 (Landscape)</SelectItem>
-                    <SelectItem value="9:16">9:16 (Portrait)</SelectItem>
+                    <SelectItem value="16:9">16:9 横版</SelectItem>
+                    <SelectItem value="9:16">9:16 竖版</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
               <div className="space-y-1.5">
-                <label className="text-[10px] text-muted-foreground font-medium">Quality</label>
+                <label className="text-[10px] text-muted-foreground font-medium">速度</label>
                 <Select
                   value={videoConfig.useFastModel ? "fast" : "standard"}
                   onValueChange={(val) => setVideoConfig({ ...videoConfig, useFastModel: val === "fast" })}
@@ -376,14 +375,14 @@ export function StoryboardContainer({
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="fast">Fast (Quicker)</SelectItem>
-                    <SelectItem value="standard">Standard (Better)</SelectItem>
+                    <SelectItem value="fast">快速测试</SelectItem>
+                    <SelectItem value="standard">质量优先</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
             </div>
             <p className="text-[10px] text-muted-foreground mt-3">
-              Total sequence duration: ~{panels.reduce((sum, p) => sum + (p.duration || 5), 0)}s
+              预计总时长：约 {panels.reduce((sum, p) => sum + (p.duration || 5), 0)} 秒
             </p>
           </div>
 
@@ -396,7 +395,7 @@ export function StoryboardContainer({
               onClick={loadDemoData}
             >
               <Layers className="mr-1.5 h-3 w-3" />
-              Load Demo Data
+              载入示例数据
             </Button>
             <Button
               size="sm"
@@ -404,7 +403,7 @@ export function StoryboardContainer({
               className="w-full h-8 text-xs rounded-lg bg-transparent"
               onClick={() => setPanels([])}
             >
-              Clear All
+              清空全部
             </Button>
           </div>
         </div>
@@ -416,7 +415,7 @@ export function StoryboardContainer({
             onClick={generateAll}
           >
             <Wand2 className="mr-1.5 h-4 w-4" />
-            Generate All Videos
+            生成全部视频
           </Button>
           {panels.length > 0 && panels.every((p) => p.videoUrl) && (
             <Button
@@ -425,7 +424,7 @@ export function StoryboardContainer({
               onClick={() => (window.location.href = "/timeline")}
             >
               <Film className="mr-1.5 h-3 w-3" />
-              Continue to Timeline Editor
+              进入剪辑台
             </Button>
           )}
         </div>
@@ -441,9 +440,9 @@ export function StoryboardContainer({
       {/* Right Panel - Storyboard panels */}
       <div className="flex-1 flex flex-col overflow-hidden bg-background">
         <div className="flex-shrink-0 h-12 px-4 flex items-center justify-between border-b border-border">
-          <span className="text-sm font-medium text-foreground">Storyboard Panels</span>
+          <span className="text-sm font-medium text-foreground">分镜列表</span>
           <span className="text-xs text-muted-foreground">
-            {panels.filter((p) => p.videoUrl).length}/{panels.length} videos generated
+            已生成 {panels.filter((p) => p.videoUrl).length}/{panels.length}
           </span>
         </div>
 
@@ -465,7 +464,7 @@ export function StoryboardContainer({
 
             {panels.length < 6 && (
               <div className="w-[280px] h-[420px] flex-none rounded-lg border border-dashed border-border bg-card flex flex-col items-center justify-center text-center p-6 opacity-50 hover:opacity-100 transition-opacity cursor-help">
-                <p className="text-xs text-muted-foreground">Select an image above and click "Add to Storyboard"</p>
+                <p className="text-xs text-muted-foreground">可以继续添加图片作为新分镜</p>
               </div>
             )}
           </div>

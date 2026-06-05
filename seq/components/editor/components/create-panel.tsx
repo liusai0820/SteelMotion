@@ -85,9 +85,9 @@ const AspectRatioSelector = memo(function AspectRatioSelector({
   onChange: (value: string) => void
 }) {
   const ratios = [
-    { value: "16:9", label: "Landscape", icon: "▬" },
-    { value: "9:16", label: "Portrait", icon: "▮" },
-    { value: "1:1", label: "Square", icon: "◼" },
+    { value: "16:9", label: "横版", icon: "▬" },
+    { value: "9:16", label: "竖版", icon: "▮" },
+    { value: "1:1", label: "方形", icon: "◼" },
   ]
 
   return (
@@ -258,7 +258,7 @@ const GenerationHistoryItem = memo(function GenerationHistoryItem({
             <span>{item.status}</span>
             <span>{formatDuration(item.costLog?.durationMs || item.generation?.durationMs)}</span>
             <span>{formatCost(item.costLog)}</span>
-            <span>fail {item.failureCount}</span>
+            <span>失败 {item.failureCount}</span>
           </div>
         </div>
 
@@ -267,14 +267,14 @@ const GenerationHistoryItem = memo(function GenerationHistoryItem({
           <button
             onClick={handleCopyPrompt}
             className="p-1.5 rounded bg-[var(--hover-overlay)] hover:bg-[var(--active-overlay)] text-[var(--text-secondary)] hover:text-white transition-colors"
-            title="Copy prompt"
+            title="复制 prompt"
           >
             {showCopied ? <Check className="w-3 h-3 text-[var(--success)]" /> : <Copy className="w-3 h-3" />}
           </button>
           <button
             onClick={onDelete}
             className="p-1.5 rounded bg-[var(--hover-overlay)] hover:bg-[var(--error-muted)] text-[var(--text-secondary)] hover:text-[var(--error)] transition-colors"
-            title="Delete"
+            title="删除"
           >
             <Trash2 className="w-3 h-3" />
           </button>
@@ -287,7 +287,7 @@ const GenerationHistoryItem = memo(function GenerationHistoryItem({
         disabled={!item.url}
         className="w-full py-1.5 bg-[var(--tertiary)] text-white text-[10px] font-bold uppercase tracking-wider disabled:opacity-50 disabled:cursor-not-allowed hover:bg-[var(--tertiary-hover)]"
       >
-        {item.url ? "Add to Timeline" : "Queued"}
+        {item.url ? "加入时间线" : "排队中"}
       </button>
       <div className="flex gap-1 px-2.5 pb-2 pt-1">
         <button
@@ -299,7 +299,7 @@ const GenerationHistoryItem = memo(function GenerationHistoryItem({
               : "border-[var(--border-default)] text-[var(--text-tertiary)] hover:text-white"
           }`}
         >
-          Keep
+          保留
         </button>
         <button
           type="button"
@@ -310,7 +310,7 @@ const GenerationHistoryItem = memo(function GenerationHistoryItem({
               : "border-[var(--border-default)] text-[var(--text-tertiary)] hover:text-white"
           }`}
         >
-          Retry
+          重试
         </button>
         <button
           type="button"
@@ -321,7 +321,7 @@ const GenerationHistoryItem = memo(function GenerationHistoryItem({
               : "border-[var(--border-default)] text-[var(--text-tertiary)] hover:text-white"
           }`}
         >
-          Discard
+          废弃
         </button>
       </div>
     </div>
@@ -394,7 +394,7 @@ export const CreatePanel = memo(function CreatePanel({
     if (!file) return
 
     if (!file.type.startsWith("image/")) {
-      toast?.error("Please upload an image file")
+      toast?.error("请上传图片文件")
       return
     }
 
@@ -462,11 +462,11 @@ export const CreatePanel = memo(function CreatePanel({
 
   return (
     <PanelContainer>
-      <PanelHeader title="Create" onClose={onClose}>
+      <PanelHeader title="生成" onClose={onClose}>
         {isGenerating && (
           <div className="flex items-center gap-2 px-2 py-1 bg-[var(--tertiary-muted)] rounded border border-[var(--tertiary)]/30">
             <div className="w-2 h-2 rounded-full bg-[var(--tertiary)] animate-pulse" />
-            <span className="text-[10px] font-medium text-[var(--tertiary)]">Generating...</span>
+            <span className="text-[10px] font-medium text-[var(--tertiary)]">生成中...</span>
           </div>
         )}
       </PanelHeader>
@@ -479,13 +479,13 @@ export const CreatePanel = memo(function CreatePanel({
             <textarea
               value={prompt}
               onChange={(e) => setPrompt(e.target.value)}
-              placeholder="Describe your video..."
+              placeholder="描述这段钢材视频的运动方式..."
               rows={3}
               className="w-full bg-[var(--surface-0)] border border-[var(--border-default)] rounded-lg px-3 py-2.5 text-sm text-[var(--text-primary)] placeholder:text-[var(--text-muted)] resize-none focus:outline-none focus:border-[var(--tertiary)] focus:ring-1 focus:ring-[var(--focus-ring)]"
             />
           </div>
 
-          <Section title="Steel Industry Templates">
+          <Section title="钢材行业模板">
             <div className="grid grid-cols-2 gap-2">
               {STEEL_INDUSTRY_TEMPLATES.map((template) => (
                 <button
@@ -505,12 +505,12 @@ export const CreatePanel = memo(function CreatePanel({
           </Section>
 
           {/* Aspect Ratio */}
-          <Section title="Aspect Ratio">
+          <Section title="画幅">
             <AspectRatioSelector value={aspectRatio} onChange={setAspectRatio} />
           </Section>
 
           {/* Model Selection */}
-          <Section title="Model">
+          <Section title="模型">
             <div className="space-y-2">
               {VIDEO_MODELS.map((model) => (
                 <ModelCard
@@ -527,11 +527,11 @@ export const CreatePanel = memo(function CreatePanel({
           </Section>
 
           {/* Image to Video (Optional) */}
-          <Section title="Reference Image (Optional)" defaultOpen={false}>
+          <Section title="参考图片（图生视频）" defaultOpen={false}>
             <input ref={fileInputRef} type="file" accept="image/*" className="hidden" onChange={handleFileUpload} />
             {imagePreview ? (
               <div className="relative rounded-lg overflow-hidden border border-[var(--border-default)]">
-                <img src={imagePreview || "/placeholder.svg"} alt="Reference" className="w-full h-32 object-cover" />
+                <img src={imagePreview || "/placeholder.svg"} alt="参考图" className="w-full h-32 object-cover" />
                 <button
                   type="button"
                   onClick={clearImagePreview}
@@ -547,7 +547,7 @@ export const CreatePanel = memo(function CreatePanel({
                 className="w-full py-6 border border-dashed border-[var(--border-strong)] rounded-lg flex flex-col items-center gap-2 text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:border-[var(--border-emphasis)] hover:bg-[var(--hover-overlay)] transition-all"
               >
                 <Upload className="w-5 h-5" />
-                <span className="text-xs">Click to upload an image</span>
+                <span className="text-xs">点击上传测试图</span>
               </button>
             )}
           </Section>
@@ -565,12 +565,12 @@ export const CreatePanel = memo(function CreatePanel({
             {isGenerating ? (
               <>
                 <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
-                <span>Generating...</span>
+                <span>生成中...</span>
               </>
             ) : (
               <>
                 <MagicIcon className="w-4 h-4" />
-                <span>Generate Video</span>
+                <span>生成视频</span>
               </>
             )}
           </button>
@@ -581,7 +581,7 @@ export const CreatePanel = memo(function CreatePanel({
           <div className="mt-6 pt-4 border-t border-[var(--border-default)]">
             <div className="flex items-center justify-between mb-3">
               <h3 className="text-[10px] font-bold text-[var(--text-tertiary)] uppercase tracking-wider">
-                Recent Generations
+                最近生成
               </h3>
               <button
                 onClick={() => {
@@ -590,7 +590,7 @@ export const CreatePanel = memo(function CreatePanel({
                 }}
                 className="text-[10px] text-[var(--text-tertiary)] hover:text-[var(--error)] transition-colors"
               >
-                Clear All
+                清空
               </button>
             </div>
             <div className="space-y-2 max-h-[300px] overflow-y-auto custom-scrollbar pr-1">
