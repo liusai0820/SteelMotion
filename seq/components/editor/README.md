@@ -1,4 +1,4 @@
-# Seq Video Editor
+# SteelMotion Video Editor
 
 A professional, browser-based non-linear video editor (NLE) built with React and Next.js. Features AI-powered video generation, multi-track timeline editing, and FFmpeg-based export.
 
@@ -208,7 +208,7 @@ interface MediaItem {
   duration: number
   aspectRatio: string
   type: 'video' | 'audio' | 'image'
-  status: 'generating' | 'ready' | 'error' | 'complete'
+  status: 'generating' | 'ready' | 'error' | 'complete' | 'queued' | 'running' | 'succeeded' | 'failed' | 'retrying'
 }
 ```
 

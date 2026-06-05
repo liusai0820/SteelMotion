@@ -5,8 +5,8 @@ import { Button } from "@/seq/components/ui/button"
 import { SeqLogo } from "@/seq/components/ui/logo"
 
 export const metadata: Metadata = {
-  title: "Demo Video - Seq",
-  description: "A live-action reimagining of the iconic Ratatouille flashback scene, created entirely with Seq.",
+  title: "Demo Video - SteelMotion",
+  description: "A SteelMotion demo sequence showing AI-assisted storyboard to timeline production.",
 }
 
 export default function DemoPage() {
@@ -25,7 +25,7 @@ export default function DemoPage() {
               <SeqLogo className="w-6 h-6 text-foreground" />
               <div className="flex items-baseline gap-2">
                 <h1 className="text-base font-semibold tracking-tight">Demo</h1>
-                <span className="text-xs text-muted-foreground hidden sm:inline">Made with Seq</span>
+                <span className="text-xs text-muted-foreground hidden sm:inline">Made with SteelMotion</span>
               </div>
             </div>
 
@@ -57,7 +57,7 @@ export default function DemoPage() {
           <h2 className="text-3xl md:text-4xl font-bold mb-4 text-balance">"Anyone Can Cook"</h2>
           <p className="text-muted-foreground max-w-2xl mx-auto text-balance">
             A live-action reimagining of the iconic flashback scene from Ratatouille — where a single bite transports a
-            hardened critic back to the warmth of his mother's kitchen. Made entirely with Seq.
+            industrial storyboard from generated frames to timeline-ready clips. Made with SteelMotion.
           </p>
         </div>
 
@@ -89,7 +89,7 @@ export default function DemoPage() {
                   <Layers className="w-6 h-6" />
                 </div>
                 <div className="flex-1 min-w-0">
-                  <h4 className="font-semibold mb-2">Seq Storyboard</h4>
+                  <h4 className="font-semibold mb-2">SteelMotion Storyboard</h4>
                   <p className="text-sm text-muted-foreground leading-relaxed mb-4">
                     We described the emotional arc of the scene — the critic's first bite, the rush of memory, and the
                     childhood kitchen. The <strong>Master Generator</strong> created each panel with consistent
@@ -116,7 +116,7 @@ export default function DemoPage() {
                   <Film className="w-6 h-6" />
                 </div>
                 <div className="flex-1 min-w-0">
-                  <h4 className="font-semibold mb-2">Seq Timeline Editor</h4>
+                  <h4 className="font-semibold mb-2">SteelMotion Timeline Editor</h4>
                   <p className="text-sm text-muted-foreground leading-relaxed mb-4">
                     We arranged the generated clips on the <strong>magnetic timeline</strong>, layering the present-day
                     restaurant scene with the soft-focus childhood memories. Added ambient audio and used the{" "}
@@ -163,7 +163,7 @@ export default function DemoPage() {
         <div className="max-w-5xl mx-auto px-6 text-center">
           <h3 className="text-xl font-semibold mb-3">Ready to create your own?</h3>
           <p className="text-muted-foreground text-sm mb-6 max-w-lg mx-auto">
-            Start with a simple prompt and let Seq handle the rest — from storyboard to final cut.
+            Start with a steel industry prompt and let SteelMotion handle the rest, from storyboard to final cut.
           </p>
           <Link href="/storyboard">
             <Button size="lg" className="h-11 px-8">

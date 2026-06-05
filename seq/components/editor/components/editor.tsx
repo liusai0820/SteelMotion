@@ -57,6 +57,9 @@ import { SidebarProvider, SidebarInset } from "@/seq/components/ui/sidebar"
 interface VideoConfig {
   aspectRatio: string
   useFastModel: boolean
+  provider?: "vidu" | "fal"
+  model?: string
+  exportTemplateId?: string
 }
 
 interface IStoryboardPanel extends StoryboardPanelType { }
@@ -97,7 +100,13 @@ export const Editor: React.FC<EditorProps> = ({ initialMedia, initialClips, init
     onPreviewStale: () => ffmpeg.setIsPreviewStale(true),
   })
 
-  const [videoConfig, setVideoConfig] = useState<VideoConfig>({ aspectRatio: "16:9", useFastModel: true })
+  const [videoConfig, setVideoConfig] = useState<VideoConfig>({
+    aspectRatio: "16:9",
+    useFastModel: true,
+    provider: "vidu",
+    model: "vidu:viduq3-pro-fast",
+    exportTemplateId: "steel-brand-standard",
+  })
 
   const storyboard = useStoryboard({
     initialPanels: initialStoryboard,

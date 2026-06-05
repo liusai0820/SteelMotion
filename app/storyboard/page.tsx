@@ -113,7 +113,7 @@ export default function StoryboardPage() {
 
     try {
       const jsonString = JSON.stringify(sessionData)
-      localStorage.setItem("seq-storyboard-session", jsonString)
+      localStorage.setItem("steelmotion-storyboard-session", jsonString)
       toast.success(`Saved ${selectedPanels.length} panels`)
     } catch (error) {
       console.error("Failed to save to localStorage:", error)
@@ -195,7 +195,7 @@ export default function StoryboardPage() {
             <div className="flex items-center justify-between h-14">
               <div className="flex items-center gap-3">
                 <h1 className="text-page-title">Storyboard</h1>
-                <span className="text-xs text-muted-foreground hidden sm:inline">Video Sequence Editor</span>
+                <span className="text-xs text-muted-foreground hidden sm:inline">SteelMotion Storyboard</span>
               </div>
 
               <div className="flex items-center gap-2">

@@ -134,8 +134,12 @@ export const MediaThumbnail = memo(function MediaThumbnail({
         </>
       ) : (
         // Loading state
-        <div className="w-full h-full flex items-center justify-center bg-[var(--surface-1)]">
-          <div className="animate-spin h-3 w-3 border border-[var(--border-emphasis)] border-t-white rounded-full" />
+        <div className="w-full h-full flex flex-col items-center justify-center gap-2 bg-[var(--surface-1)]">
+          {item.status === "queued" || item.status === "running" || item.status === "retrying" ? (
+            <span className="text-[10px] uppercase tracking-wide text-[var(--text-tertiary)]">{item.status}</span>
+          ) : (
+            <div className="animate-spin h-3 w-3 border border-[var(--border-emphasis)] border-t-white rounded-full" />
+          )}
         </div>
       )}
 

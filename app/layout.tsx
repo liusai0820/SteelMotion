@@ -1,6 +1,5 @@
 import type React from "react"
 import type { Metadata } from "next"
-import { Inter, JetBrains_Mono } from "next/font/google"
 import { Suspense } from "react"
 import { ErrorBoundary } from "@/seq/components/error-boundary"
 import { Toaster, ToastProvider } from "@/seq/components/ui/sonner"
@@ -9,23 +8,14 @@ import { DeploymentNotice } from "@/seq/components/deployment-notice"
 //@ts-ignore
 import "./globals.css"
 
-const inter = Inter({
-  subsets: ["latin"],
-  variable: "--font-inter",
-})
-
-const jetbrainsMono = JetBrains_Mono({
-  subsets: ["latin"],
-  variable: "--font-jetbrains-mono",
-})
-
 export const metadata: Metadata = {
-  title: "Seq - AI-Powered Storyboard to Video Sequence Editor",
+  title: "SteelMotion - Steel Industry Storyboard to Video Studio",
   description:
-    "Transform storyboards into cinematic video sequences. Seq uses AI to generate video clips from your panels and assembles them in a professional magnetic timeline editor.",
+    "Generate steel industry storyboards, video clips, and export-ready product sequences with provider-swappable AI video models.",
   keywords: [
-    "seq",
-    "sequence editor",
+    "SteelMotion",
+    "steel video generation",
+    "steel industry marketing",
     "storyboard to video",
     "AI video generation",
     "magnetic timeline",
@@ -42,16 +32,16 @@ export const metadata: Metadata = {
   openGraph: {
     type: "website",
     locale: "en_US",
-    title: "Seq - AI-Powered Storyboard to Video Sequence Editor",
+    title: "SteelMotion - Steel Industry Storyboard to Video Studio",
     description:
-      "Transform storyboards into cinematic video sequences with AI video generation and a professional magnetic timeline editor.",
-    siteName: "Seq",
+      "Generate steel industry storyboards, video clips, and export-ready product sequences with AI video models.",
+    siteName: "SteelMotion",
   },
   twitter: {
     card: "summary_large_image",
-    title: "Seq - AI-Powered Storyboard to Video Sequence Editor",
+    title: "SteelMotion - Steel Industry Storyboard to Video Studio",
     description:
-      "Transform storyboards into cinematic video sequences with AI video generation and a professional magnetic timeline editor.",
+      "Generate steel industry storyboards, video clips, and export-ready product sequences with AI video models.",
     creator: "@vercel",
   },
   robots: {
@@ -82,14 +72,10 @@ export default function RootLayout({
   return (
     <html
       lang="en"
-      className={`${inter.variable} ${jetbrainsMono.variable}`}
       suppressHydrationWarning
       style={{ backgroundColor: "#000000" }}
     >
-      <head>
-        <link rel="preconnect" href="https://fonts.googleapis.com" />
-        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
-      </head>
+      <head />
       <body className="font-sans antialiased" style={{ backgroundColor: "#000000" }}>
         <ToastProvider>
           <ErrorBoundary>

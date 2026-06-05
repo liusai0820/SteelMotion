@@ -7,8 +7,9 @@ import { Textarea } from "@/seq/components/ui/textarea"
 import { Card } from "@/seq/components/ui/card"
 import { Badge } from "@/seq/components/ui/badge"
 import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from "@/seq/components/ui/select"
-import type { StoryboardPanelData, VideoConfig } from "./types"
+import type { StoryboardPanelData, VideoConfig, VideoModel } from "./types"
 import { cn } from "@/seq/lib/utils"
+import { VIDEO_MODELS } from "@/seq/components/editor/constants"
 
 interface StoryboardPanelProps {
   panel: StoryboardPanelData
@@ -193,27 +194,18 @@ export function StoryboardPanel({
         <div className="space-y-1.5">
           <label className="text-[10px] uppercase tracking-wider text-white/40 font-semibold">Video Model</label>
           <Select
-            defaultValue="veo3.1-fast"
-            onValueChange={(val) => onUpdate(panel.id, { model: val as any })}
-            value={panel.model || "veo3.1-fast"}
+            value={panel.model || "vidu:viduq3-pro-fast"}
+            onValueChange={(val) => onUpdate(panel.id, { model: val as VideoModel })}
           >
             <SelectTrigger className="h-7 text-xs bg-white/5 border-white/10 text-white">
-              <SelectValue placeholder="veo3.1-fast" />
+              <SelectValue placeholder="vidu:viduq3-pro-fast" />
             </SelectTrigger>
             <SelectContent className="bg-zinc-900 border-zinc-800">
-              {isTransitionPanel ? (
-                <>
-                  <SelectItem value="veo3.1-fast">Veo 3.1 Fast</SelectItem>
-                  <SelectItem value="veo3.1-standard">Veo 3.1 Standard</SelectItem>
-                  <SelectItem value="wan-2.2-transition">WAN 2.2 Turbo</SelectItem>
-                </>
-              ) : (
-                <>
-                  <SelectItem value="veo3.1-fast">Veo 3.1 Fast</SelectItem>
-                  <SelectItem value="veo3.1-standard">Veo 3.1 Standard</SelectItem>
-                  <SelectItem value="wan-2.5">WAN 2.5 Preview</SelectItem>
-                </>
-              )}
+              {VIDEO_MODELS.map((model) => (
+                <SelectItem key={model.id} value={model.id}>
+                  {model.name}
+                </SelectItem>
+              ))}
             </SelectContent>
           </Select>
         </div>

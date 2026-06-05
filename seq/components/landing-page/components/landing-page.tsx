@@ -23,33 +23,33 @@ import { CreditsDisplay } from "@/seq/components/shared"
 // Hero slides for carousel
 const HERO_SLIDES = [
   {
-    title: "Create AI Videos in Minutes",
-    description: "Transform your ideas into stunning videos with AI-powered generation, transitions, and effects.",
-    tag: "New Release",
-    cta: "Start Creating",
+    title: "SteelMotion",
+    description: "Generate steel industry videos from material, processing, product application, component highlights, and brand close.",
+    tag: "Steel Video Studio",
+    cta: "Open Storyboard",
     ctaLink: "/storyboard",
-    gradient: "from-rose-600 via-pink-600 to-orange-500",
-    badgeColor: "bg-rose-500",
+    gradient: "from-zinc-700 via-cyan-700 to-emerald-600",
+    badgeColor: "bg-cyan-600",
     buttonColor: "bg-white hover:bg-white/90",
   },
   {
-    title: "AI Storyboard Generator",
-    description: "Generate complete storyboards from text prompts. Let AI handle the visuals.",
-    tag: "Featured",
-    cta: "Try Storyboard",
+    title: "Steel Templates",
+    description: "Start from automotive, water pipe, construction, home appliance, or engineering machinery workflows.",
+    tag: "Industry Templates",
+    cta: "Use Templates",
     ctaLink: "/storyboard",
-    gradient: "from-violet-600 via-purple-600 to-fuchsia-500",
-    badgeColor: "bg-violet-500",
+    gradient: "from-slate-700 via-sky-700 to-teal-600",
+    badgeColor: "bg-teal-600",
     buttonColor: "bg-white hover:bg-white/90",
   },
   {
-    title: "Image Playground",
-    description: "Combine and transform images with AI. Create unique visuals for your projects.",
-    tag: "Popular",
-    cta: "Explore Images",
+    title: "Provider Switch",
+    description: "Route scenes through Vidu first, with provider and model selection kept open for future integration.",
+    tag: "Vidu Ready",
+    cta: "Generate Clips",
     ctaLink: "/image-playground",
-    gradient: "from-cyan-600 via-teal-500 to-emerald-500",
-    badgeColor: "bg-cyan-500",
+    gradient: "from-neutral-700 via-indigo-700 to-cyan-600",
+    badgeColor: "bg-indigo-600",
     buttonColor: "bg-white hover:bg-white/90",
   },
 ]
@@ -58,10 +58,10 @@ const HERO_SLIDES = [
 const FEATURED_PROJECTS = [
   {
     id: 1,
-    title: "Cyberpunk Chase Scene",
-    description: "A high-octane neon-lit chase through futuristic city streets with intense action sequences",
-    style: "sci-fi, neon, action",
-    creator: "AIDirector",
+    title: "Automotive AHSS Launch",
+    description: "High-strength steel from coil to body-in-white, ending on battery tray and crash beam highlights",
+    style: "automotive, AHSS",
+    creator: "SteelMotion",
     plays: "43K",
     likes: 694,
     duration: "1:42",
@@ -70,10 +70,10 @@ const FEATURED_PROJECTS = [
   },
   {
     id: 2,
-    title: "Nature Documentary",
-    description: "Breathtaking wildlife footage captured with cinematic precision and natural lighting",
-    style: "wildlife, cinematic",
-    creator: "NatureLens",
+    title: "Urban Water Pipe System",
+    description: "Stainless steel pipe production, pressure testing, and safe water delivery scenes",
+    style: "water pipe, infrastructure",
+    creator: "SteelMotion",
     plays: "28K",
     likes: 412,
     duration: "2:15",
@@ -82,10 +82,10 @@ const FEATURED_PROJECTS = [
   },
   {
     id: 3,
-    title: "Abstract Dreams",
-    description: "Surreal visual journey through colorful dreamscapes and abstract compositions",
-    style: "surreal, artistic",
-    creator: "DreamWeaver",
+    title: "Construction Steel Profile",
+    description: "H-beam rolling, modular prefabrication, seismic joints, and skyline brand close",
+    style: "construction, structure",
+    creator: "SteelMotion",
     plays: "15K",
     likes: 256,
     duration: "0:58",
@@ -96,31 +96,31 @@ const FEATURED_PROJECTS = [
 
 // Suggested creators
 const SUGGESTED_CREATORS = [
-  { id: 1, name: "AIDirector", avatar: "/diverse-group-avatars.png", followers: "22K" },
-  { id: 2, name: "NatureLens", avatar: "/diverse-group-avatars.png", followers: "18K" },
-  { id: 3, name: "DreamWeaver", avatar: "/diverse-group-avatars.png", followers: "15K" },
+  { id: 1, name: "Automotive", avatar: "/diverse-group-avatars.png", followers: "template" },
+  { id: 2, name: "Water Pipe", avatar: "/diverse-group-avatars.png", followers: "template" },
+  { id: 3, name: "Machinery", avatar: "/diverse-group-avatars.png", followers: "template" },
 ]
 
 // Trending items
 const TRENDING_ITEMS = [
   {
     id: 1,
-    title: "Sunset Transitions",
-    description: "Beautiful golden hour transitions perfect for cinematic storytelling",
-    style: "Cinematic",
-    creator: "FilmMaker Pro",
+    title: "Appliance Panel Finish",
+    description: "Color-coated sheet, surface inspection, and home appliance shell close-ups",
+    style: "home appliance",
+    creator: "SteelMotion",
     plays: "12K",
     likes: 206,
     duration: "1:24",
-    badge: "Made with Seq",
+    badge: "Made with SteelMotion",
     thumbnail: "/sunset-cinematic-transition-thumbnail.jpg",
   },
   {
     id: 2,
-    title: "Urban Stories",
-    description: "Documentary-style urban exploration through city life and street culture",
-    style: "Documentary",
-    creator: "CityScape",
+    title: "Heavy Machinery Wear Plate",
+    description: "Wear-resistant plate processing and excavator bucket component highlights",
+    style: "engineering machinery",
+    creator: "SteelMotion",
     plays: "8.5K",
     likes: 178,
     duration: "2:03",
@@ -154,7 +154,7 @@ export const LandingPage: React.FC = () => {
             <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-neutral-500" />
             <input
               type="text"
-              placeholder="Create your own video sequence"
+              placeholder="Create a steel industry video sequence"
               className="w-full h-10 pl-10 pr-4 bg-[var(--surface-2)] border border-[var(--border-default)] rounded-full text-sm text-white placeholder:text-neutral-500 focus:outline-none focus:ring-1 focus:ring-[var(--focus-ring)] focus:border-[var(--accent-primary)] transition-colors"
             />
           </div>
@@ -265,7 +265,7 @@ export const LandingPage: React.FC = () => {
               {/* For You Section */}
               <div className="lg:col-span-1">
                 <div className="flex items-center gap-2 mb-4">
-                  <h3 className="text-lg font-semibold text-white">For You</h3>
+                  <h3 className="text-lg font-semibold text-white">Steel Projects</h3>
                   <ChevronRightIcon className="w-4 h-4 text-neutral-500" />
                 </div>
                 <div className="space-y-1">
@@ -297,7 +297,7 @@ export const LandingPage: React.FC = () => {
               {/* Suggested Creators */}
               <div className="lg:col-span-1">
                 <div className="flex items-center gap-2 mb-4">
-                  <h3 className="text-lg font-semibold text-white">Suggested Creators</h3>
+                  <h3 className="text-lg font-semibold text-white">Templates</h3>
                 </div>
                 <div className="space-y-2">
                   {SUGGESTED_CREATORS.map((creator) => (
@@ -314,11 +314,11 @@ export const LandingPage: React.FC = () => {
                       </div>
                       <div className="flex-1 min-w-0">
                         <h4 className="font-medium text-sm text-white">{creator.name}</h4>
-                        <p className="text-xs text-neutral-500">{creator.followers} followers</p>
+                        <p className="text-xs text-neutral-500">{creator.followers}</p>
                       </div>
                       <button className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-[var(--hover-overlay)] border border-[var(--border-emphasis)] text-xs font-medium text-white hover:bg-[var(--active-overlay)] transition-colors opacity-0 group-hover:opacity-100">
                         <Users className="w-3 h-3" />
-                        Follow
+                        Use
                       </button>
                     </div>
                   ))}
@@ -363,7 +363,7 @@ export const LandingPage: React.FC = () => {
               <div className="lg:col-span-1">
                 <div className="flex items-center justify-between mb-4">
                   <div className="flex items-center gap-2">
-                    <h3 className="text-lg font-semibold text-white">Trending</h3>
+                    <h3 className="text-lg font-semibold text-white">Recent Clips</h3>
                     <ChevronRightIcon className="w-4 h-4 text-neutral-500" />
                   </div>
                   <div className="flex items-center p-0.5 rounded-lg bg-[var(--surface-2)]">
@@ -424,11 +424,11 @@ export const LandingPage: React.FC = () => {
             <div className="text-center mb-12">
               <span className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[var(--accent-bg-subtle)] border border-[var(--accent-border)] text-xs font-medium text-[var(--accent-text)] mb-4">
                 <BrainIcon className="w-3 h-3" />
-                AI Pipeline
+                SteelMotion Pipeline
               </span>
-              <h2 className="text-2xl md:text-3xl font-bold mb-3 text-white">From Text to Timeline in 5 Steps</h2>
+              <h2 className="text-2xl md:text-3xl font-bold mb-3 text-white">From Material to Brand Close in 5 Steps</h2>
               <p className="text-neutral-400 text-sm max-w-lg mx-auto">
-                Our automated pipeline handles the heavy lifting. You focus on the story.
+                The default storyboard prompt follows the steel industry structure for client-ready product films.
               </p>
             </div>
 
@@ -436,26 +436,26 @@ export const LandingPage: React.FC = () => {
               {[
                 {
                   icon: BrainIcon,
-                  label: "Generate",
+                  label: "Material",
                   bgColor: "bg-violet-500/20",
                   textColor: "text-violet-400",
                 },
                 {
                   icon: LinkIcon,
-                  label: "Transitions",
+                  label: "Process",
                   bgColor: "bg-purple-500/20",
                   textColor: "text-purple-400",
                 },
-                { icon: CheckSquareIcon, label: "Select", bgColor: "bg-emerald-500/20", textColor: "text-emerald-400" },
+                { icon: CheckSquareIcon, label: "Application", bgColor: "bg-emerald-500/20", textColor: "text-emerald-400" },
                 {
                   icon: SlidersIcon,
-                  label: "Process",
+                  label: "Highlight",
                   bgColor: "bg-amber-500/20",
                   textColor: "text-amber-400",
                 },
                 {
                   icon: VideoIcon,
-                  label: "Produce",
+                  label: "Brand",
                   bgColor: "bg-rose-500/20",
                   textColor: "text-rose-400",
                 },
@@ -482,9 +482,9 @@ export const LandingPage: React.FC = () => {
           <div className="max-w-6xl mx-auto flex flex-col md:flex-row justify-between items-center gap-4">
             <div className="flex items-center gap-2">
               <LogoIcon className="w-5 h-5 text-[var(--accent-primary)]" />
-              <span className="font-semibold text-white">Seq</span>
+              <span className="font-semibold text-white">SteelMotion</span>
             </div>
-            <div className="text-xs text-neutral-500">© 2025 Seq. All rights reserved.</div>
+            <div className="text-xs text-neutral-500">© 2026 SteelMotion. All rights reserved.</div>
             <div className="flex gap-4">
               <a href="#" className="text-xs text-neutral-400 hover:text-white transition-colors">
                 Twitter

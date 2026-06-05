@@ -2,6 +2,52 @@
 
 import { useState, useCallback, useRef } from "react"
 import type { MediaItem } from "../types"
+import type { CostLog, Generation, GenerationStatus } from "@/seq/lib/steelmotion/types"
+
+interface GeneratedMediaResult {
+  url: string
+  type: "video" | "image"
+  status?: GenerationStatus
+  generation?: Generation
+  costLog?: CostLog
+}
+
+interface VideoGenerationResponse {
+  url?: string
+  status?: GenerationStatus
+  data?: {
+    video?: {
+      url?: string
+    }
+  }
+  generation?: Generation
+  costLog?: CostLog
+}
+
+function isRecord(value: unknown): value is Record<string, unknown> {
+  return typeof value === "object" && value !== null
+}
+
+function getErrorMessage(value: unknown, fallback: string): string {
+  if (value instanceof Error) return value.message
+  if (isRecord(value) && typeof value.error === "string") return value.error
+  return fallback
+}
+
+function parseVideoGenerationResponse(value: unknown): VideoGenerationResponse {
+  if (!isRecord(value)) return {}
+
+  const data = isRecord(value.data) ? value.data : undefined
+  const video = data && isRecord(data.video) ? data.video : undefined
+
+  return {
+    url: typeof value.url === "string" ? value.url : undefined,
+    status: typeof value.status === "string" ? (value.status as GenerationStatus) : undefined,
+    data: video && typeof video.url === "string" ? { video: { url: video.url } } : undefined,
+    generation: isRecord(value.generation) ? (value.generation as unknown as Generation) : undefined,
+    costLog: isRecord(value.costLog) ? (value.costLog as unknown as CostLog) : undefined,
+  }
+}
 
 interface UseMediaGenerationOptions {
   defaultDuration: number
@@ -12,7 +58,7 @@ interface UseMediaGenerationOptions {
 
 interface UseMediaGenerationReturn {
   isGenerating: boolean
-  generatedItem: { url: string; type: "video" | "image" } | null
+  generatedItem: GeneratedMediaResult | null
   generate: (
     prompt: string,
     aspectRatio: string,
@@ -30,7 +76,7 @@ export function useMediaGeneration({
   onAddToTimeline,
 }: UseMediaGenerationOptions): UseMediaGenerationReturn {
   const [isGenerating, setIsGenerating] = useState(false)
-  const [generatedItem, setGeneratedItem] = useState<{ url: string; type: "video" | "image" } | null>(null)
+  const [generatedItem, setGeneratedItem] = useState<GeneratedMediaResult | null>(null)
   const objectUrlsRef = useRef<string[]>([])
   const isMountedRef = useRef(true)
 
@@ -52,6 +98,7 @@ export function useMediaGeneration({
 
       try {
         let videoUrl = ""
+        let currentGeneratedItem: GeneratedMediaResult | null = null
 
         if (type === "video") {
           const response = await fetch("/api/seq/generate-video", {
@@ -61,13 +108,19 @@ export function useMediaGeneration({
           })
 
           if (!response.ok) {
-            const err = await response.json()
-            throw new Error(err.error || "Generation failed")
+            throw new Error(getErrorMessage(await response.json(), "Generation failed"))
           }
 
-          const result = await response.json()
-          setGeneratedItem({ url: result.url, type: "video" })
-          videoUrl = result.url
+          const result = parseVideoGenerationResponse(await response.json())
+          videoUrl = result.url || result.data?.video?.url || ""
+          currentGeneratedItem = {
+            url: videoUrl,
+            type: "video",
+            status: result.status,
+            generation: result.generation,
+            costLog: result.costLog,
+          }
+          setGeneratedItem(currentGeneratedItem)
         } else {
           // Image Generation
           let apiAspectRatio = "square"
@@ -88,22 +141,45 @@ export function useMediaGeneration({
           const response = await fetch("/api/seq/generate-image", { method: "POST", body: formData })
 
           if (!response.ok) {
-            const err = await response.json()
-            throw new Error(err.error || "Image generation failed")
+            throw new Error(getErrorMessage(await response.json(), "Image generation failed"))
           }
 
           const result = await response.json()
-          setGeneratedItem({ url: result.url, type: "image" })
+          currentGeneratedItem = { url: result.url, type: "image" }
+          setGeneratedItem(currentGeneratedItem)
           videoUrl = result.url
         }
 
-        if (!videoUrl) throw new Error("No URL received")
+        if (
+          !videoUrl &&
+          type === "video" &&
+          currentGeneratedItem?.status !== "queued" &&
+          currentGeneratedItem?.status !== "running"
+        ) {
+          throw new Error("No URL received")
+        }
 
         if (isMountedRef.current) {
-          onMediaUpdate(newId, { url: videoUrl, status: "ready" })
+          const mediaStatus = videoUrl ? "ready" : currentGeneratedItem?.status || "queued"
+          onMediaUpdate(newId, {
+            url: videoUrl,
+            status: mediaStatus,
+            generation: currentGeneratedItem?.generation,
+            costLog: currentGeneratedItem?.costLog,
+            providerId: currentGeneratedItem?.generation?.providerId,
+            model: currentGeneratedItem?.generation?.model,
+            failureCount: currentGeneratedItem?.generation?.failureCount,
+            clipDecision: currentGeneratedItem?.generation?.clipDecision,
+          })
 
           if (videoUrl) {
-            const readyItem = { ...tempMedia, url: videoUrl, status: "ready" as const }
+            const readyItem = {
+              ...tempMedia,
+              url: videoUrl,
+              status: "ready" as const,
+              generation: currentGeneratedItem?.generation,
+              costLog: currentGeneratedItem?.costLog,
+            }
             onAddToTimeline(readyItem)
           }
         }

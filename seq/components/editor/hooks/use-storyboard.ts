@@ -5,6 +5,38 @@ import type React from "react"
 import { useState, useCallback } from "react"
 import type { StoryboardPanel, MediaItem, VideoConfig } from "../types"
 import { useToastContext } from "@/seq/components/ui/sonner"
+import type { CostLog, Generation, GenerationStatus } from "@/seq/lib/steelmotion/types"
+
+interface VideoGenerationResponse {
+  url?: string
+  status?: GenerationStatus
+  data?: {
+    video?: {
+      url?: string
+    }
+  }
+  generation?: Generation
+  costLog?: CostLog
+}
+
+function isRecord(value: unknown): value is Record<string, unknown> {
+  return typeof value === "object" && value !== null
+}
+
+function parseVideoGenerationResponse(value: unknown): VideoGenerationResponse {
+  if (!isRecord(value)) return {}
+
+  const data = isRecord(value.data) ? value.data : undefined
+  const video = data && isRecord(data.video) ? data.video : undefined
+
+  return {
+    url: typeof value.url === "string" ? value.url : undefined,
+    status: typeof value.status === "string" ? (value.status as GenerationStatus) : undefined,
+    data: video && typeof video.url === "string" ? { video: { url: video.url } } : undefined,
+    generation: isRecord(value.generation) ? (value.generation as unknown as Generation) : undefined,
+    costLog: isRecord(value.costLog) ? (value.costLog as unknown as CostLog) : undefined,
+  }
+}
 
 interface UseStoryboardOptions {
   initialPanels?: StoryboardPanel[]
@@ -100,6 +132,8 @@ export function useStoryboard({ initialPanels, videoConfig, onMediaAdd }: UseSto
           aspectRatio: videoConfig.aspectRatio,
           duration: panel?.duration || 5,
           useFastModel: useFastModel ?? videoConfig.useFastModel,
+          model: videoConfig.model,
+          provider: videoConfig.provider,
         }
 
         const response = await fetch("/api/seq/generate-video", {
@@ -113,10 +147,10 @@ export function useStoryboard({ initialPanels, videoConfig, onMediaAdd }: UseSto
           throw new Error(errorData.error || "Video generation failed")
         }
 
-        const result = await response.json()
+        const result = parseVideoGenerationResponse(await response.json())
+        const videoUrl = result.url || result.data?.video?.url
 
-        if (result.data?.video?.url) {
-          const videoUrl = result.data.video.url
+        if (videoUrl) {
           const mediaId = `media-sb-${panelId}-${Date.now()}`
           const newMedia: MediaItem = {
             id: mediaId,
@@ -127,9 +161,25 @@ export function useStoryboard({ initialPanels, videoConfig, onMediaAdd }: UseSto
             status: "ready",
             type: "video",
             resolution: { width: 1280, height: 720 },
+            generation: result.generation,
+            costLog: result.costLog,
           }
           onMediaAdd(newMedia)
-          updatePanel(panelId, { videoUrl, status: "idle", mediaId })
+          updatePanel(panelId, {
+            videoUrl,
+            status: "idle",
+            mediaId,
+            generation: result.generation,
+            costLog: result.costLog,
+            generationStatus: result.status || "succeeded",
+          })
+        } else if (result.status === "queued" || result.status === "running") {
+          updatePanel(panelId, {
+            status: "idle",
+            generation: result.generation,
+            costLog: result.costLog,
+            generationStatus: result.status,
+          })
         } else {
           throw new Error("No video URL in response")
         }

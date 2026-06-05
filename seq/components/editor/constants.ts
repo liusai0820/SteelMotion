@@ -1,5 +1,8 @@
 // Editor constants for consistent values across components
 
+import { EXPORT_TEMPLATES } from "@/seq/lib/steelmotion/templates"
+import { VIDEO_PROVIDERS } from "@/seq/lib/steelmotion/providers"
+
 // Timeline
 export const TIMELINE_CONSTANTS = {
   MIN_ZOOM: 0.1,
@@ -193,11 +196,18 @@ export const TRANSITION_TYPES = [
 ] as const
 
 // Video models
-export const VIDEO_MODELS = [
-  { id: "fal-ai/minimax-video", name: "Minimax", description: "Fast generation" },
-  { id: "fal-ai/hunyuan-video", name: "Hunyuan", description: "Best quality" },
-  { id: "fal-ai/veo-2", name: "Veo 2", description: "Google's latest" },
-] as const
+export const VIDEO_MODELS = VIDEO_PROVIDERS.flatMap((provider) =>
+  provider.models.map((model) => ({
+    id: `${provider.id}:${model.id}`,
+    name: model.name,
+    description: `${provider.name} · ${model.description}`,
+    provider: provider.id,
+    costHint: model.costHint,
+  })),
+)
+
+// Export templates
+export const STEELMOTION_EXPORT_TEMPLATES = EXPORT_TEMPLATES
 
 // Aspect ratios
 export const ASPECT_RATIOS = [
@@ -217,7 +227,7 @@ export const INITIAL_TRACKS = [
 // Autosave configuration
 export const AUTOSAVE_CONSTANTS = {
   DEBOUNCE_MS: 5000, // 5 seconds
-  STORAGE_KEY: "seq_autosave",
+  STORAGE_KEY: "steelmotion_autosave",
   MAX_SIZE_MB: 50,
 } as const
 

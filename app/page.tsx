@@ -2,9 +2,9 @@ import type { Metadata } from "next"
 import { LandingPage } from "@/seq/components/landing-page/components/landing-page"
 
 export const metadata: Metadata = {
-  title: "Seq - AI-Powered Storyboard to Video Sequence Editor",
+  title: "SteelMotion - Steel Industry Storyboard to Video Studio",
   description:
-    "Transform storyboards into cinematic video sequences. Generate storyboard panels with AI, then assemble them in a professional magnetic timeline editor.",
+    "Generate steel industry storyboard videos from material, processing, product application, component highlights, and brand close.",
 }
 
 export default function Home() {

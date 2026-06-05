@@ -6,9 +6,10 @@ import { Button } from "@/seq/components/ui/button"
 import { Textarea } from "@/seq/components/ui/textarea"
 import { Badge } from "@/seq/components/ui/badge"
 import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from "@/seq/components/ui/select"
-import type { StoryboardPanelData, VideoConfig } from "./types"
+import type { StoryboardPanelData, VideoConfig, VideoModel } from "./types"
 import { cn } from "@/seq/lib/utils"
 import Image from "next/image"
+import { VIDEO_MODELS } from "@/seq/components/editor/constants"
 
 interface StoryboardPanelProps {
   panel: StoryboardPanelData
@@ -188,30 +189,25 @@ export function StoryboardPanel({
           <label className="text-[10px] uppercase tracking-wider text-muted-foreground font-semibold">
             Video Model
           </label>
-          <Select defaultValue="veo3.1-fast" onValueChange={(val) => onUpdate(panel.id, { model: val as any })}>
+          <Select
+            value={panel.model || "vidu:viduq3-pro-fast"}
+            onValueChange={(val) => onUpdate(panel.id, { model: val as VideoModel })}
+          >
             <SelectTrigger className="h-7 text-xs">
-              <SelectValue placeholder="veo3.1-fast" />
+              <SelectValue placeholder="vidu:viduq3-pro-fast" />
             </SelectTrigger>
             <SelectContent>
-              {isTransitionPanel ? (
-                <>
-                  <SelectItem value="veo3-fast">Veo 3.1 Fast</SelectItem>
-                  <SelectItem value="veo3-standard">Veo 3.1 Standard</SelectItem>
-                  <SelectItem value="wan-2.2">WAN 2.2 Turbo</SelectItem>
-                </>
-              ) : (
-                <>
-                  <SelectItem value="veo3-fast">Veo 3.1 Fast</SelectItem>
-                  <SelectItem value="veo3-standard">Veo 3.1 Standard</SelectItem>
-                  <SelectItem value="wan-2.5">WAN 2.5 Preview</SelectItem>
-                </>
-              )}
+              {VIDEO_MODELS.map((model) => (
+                <SelectItem key={model.id} value={model.id}>
+                  {model.name}
+                </SelectItem>
+              ))}
             </SelectContent>
           </Select>
           <p className="text-[9px] text-muted-foreground/50 leading-tight">
             {isTransitionPanel
-              ? "Try WAN 2.2 if Veo 3.1 has strict content policies"
-              : "Try WAN 2.5 if Veo 3.1 has strict content policies"}
+              ? "Use a first-last-frame capable provider model for cleaner transitions"
+              : "Vidu models are the SteelMotion default; fal models remain available for compatibility"}
           </p>
         </div>
 

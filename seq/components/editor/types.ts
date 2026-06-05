@@ -1,3 +1,5 @@
+import type { ClipDecision, CostLog, Generation, GenerationStatus, ProviderId } from "@/seq/lib/steelmotion/types"
+
 export interface MediaItem {
   id: string
   url: string
@@ -5,9 +7,15 @@ export interface MediaItem {
   duration: number
   aspectRatio: string
   thumbnailUrl?: string
-  status: "generating" | "ready" | "error" | "complete"
+  status: "generating" | "ready" | "error" | "complete" | GenerationStatus
   type: "video" | "audio" | "image"
   resolution?: { width: number; height: number }
+  generation?: Generation
+  costLog?: CostLog
+  providerId?: ProviderId
+  model?: string
+  failureCount?: number
+  clipDecision?: ClipDecision
 }
 
 export type TransitionType = "none" | "cross-dissolve" | "fade-black" | "fade-white" | "wipe-left" | "wipe-right"
@@ -76,11 +84,18 @@ export interface StoryboardPanel {
   status: "idle" | "generating-image" | "generating-video" | "enhancing" | "error"
   error?: string
   duration: 5 | 8 | 4 | 3 | 2 | 6 // in seconds
+  generation?: Generation
+  costLog?: CostLog
+  generationStatus?: GenerationStatus
+  clipDecision?: ClipDecision
 }
 
 export interface VideoConfig {
   aspectRatio: "16:9" | "9:16" | "1:1" | "4:3" | "3:4" | "21:9" | string
   useFastModel: boolean
+  provider?: ProviderId
+  model?: string
+  exportTemplateId?: string
 }
 
 export interface Marker {

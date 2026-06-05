@@ -1,6 +1,7 @@
 // Project save/load service for serializing and deserializing editor state
 
 import type { MediaItem, TimelineClip, Track, StoryboardPanel, VideoConfig } from "../types"
+import type { CostLog, Generation, Project } from "@/seq/lib/steelmotion/types"
 
 export interface ProjectData {
   version: string
@@ -13,11 +14,23 @@ export interface ProjectData {
   storyboardPanels: StoryboardPanel[]
   videoConfig: VideoConfig
   masterDescription?: string
+  generations: Generation[]
+  costLogs: CostLog[]
+  steelMotionProject?: Project
 }
 
-const PROJECT_VERSION = "1.0.0"
-const PROJECT_STORAGE_KEY = "seq-editor-project"
-const AUTOSAVE_KEY = "seq-editor-autosave"
+const PROJECT_VERSION = "2.0.0"
+const PROJECT_STORAGE_KEY = "steelmotion-editor-project"
+const AUTOSAVE_KEY = "steelmotion-editor-autosave"
+
+function uniqueById<T extends { id: string }>(items: Array<T | undefined>): T[] {
+  const seen = new Set<string>()
+  return items.filter((item): item is T => {
+    if (!item || seen.has(item.id)) return false
+    seen.add(item.id)
+    return true
+  })
+}
 
 // Convert blob URLs to base64 for persistence
 async function blobUrlToBase64(url: string): Promise<string | null> {
@@ -88,6 +101,8 @@ export async function serializeProject(
       videoUrl: panel.videoUrl ? (await blobUrlToBase64(panel.videoUrl)) || panel.videoUrl : undefined,
     })),
   )
+  const generations = uniqueById([...media.map((item) => item.generation), ...storyboardPanels.map((panel) => panel.generation)])
+  const costLogs = uniqueById([...media.map((item) => item.costLog), ...storyboardPanels.map((panel) => panel.costLog)])
 
   return {
     version: PROJECT_VERSION,
@@ -100,6 +115,8 @@ export async function serializeProject(
     storyboardPanels: serializedStoryboard,
     videoConfig,
     masterDescription,
+    generations,
+    costLogs,
   }
 }
 
@@ -143,7 +160,7 @@ export async function saveProjectToFile(projectData: ProjectData): Promise<void>
 
   const a = document.createElement("a")
   a.href = url
-  a.download = `${projectData.name.replace(/[^a-z0-9]/gi, "_")}.seqproj`
+  a.download = `${projectData.name.replace(/[^a-z0-9]/gi, "_")}.steelmotionproj`
   document.body.appendChild(a)
   a.click()
   document.body.removeChild(a)
@@ -154,7 +171,7 @@ export async function loadProjectFromFile(): Promise<ProjectData | null> {
   return new Promise((resolve) => {
     const input = document.createElement("input")
     input.type = "file"
-    input.accept = ".seqproj,.json"
+    input.accept = ".steelmotionproj,.seqproj,.json"
 
     input.onchange = async (e) => {
       const file = (e.target as HTMLInputElement).files?.[0]

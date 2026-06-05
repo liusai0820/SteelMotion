@@ -10,7 +10,7 @@ export function DeploymentNotice() {
   useEffect(() => {
     // Check if we're on the demo domain
     const hostname = window.location.hostname
-    const isDemoSite = hostname === "seq-studio.vercel.app" || hostname.includes("seq-studio")
+    const isDemoSite = hostname === "steelmotion.vercel.app" || hostname.includes("steelmotion")
 
     // Check if user has dismissed before (session only)
     const dismissed = sessionStorage.getItem("deployment-notice-dismissed")
@@ -53,13 +53,13 @@ export function DeploymentNotice() {
         {/* Content */}
         <div className="p-4 space-y-3">
           <p className="text-[var(--text-secondary)] text-sm leading-relaxed">
-            This is a demo deployment. To use Seq with full functionality, deploy your own instance and add your API
+            This is a demo deployment. To use SteelMotion with full functionality, deploy your own instance and add your API
             keys.
           </p>
 
           <div className="space-y-2">
             <a
-              href="https://github.com/your-repo/seq"
+              href="https://github.com/liusai0820/SteelMotion"
               target="_blank"
               rel="noopener noreferrer"
               className="flex items-center gap-2 text-sm text-[var(--text-secondary)] hover:text-[var(--text-primary)] transition-colors"
@@ -69,7 +69,7 @@ export function DeploymentNotice() {
             </a>
             <div className="flex items-center gap-2 text-sm text-[var(--text-muted)]">
               <Key className="w-4 h-4" />
-              <span>Required: FAL_KEY, GOOGLE_GENERATIVE_AI_API_KEY</span>
+              <span>Required: VIDU_API_KEY or FAL_KEY, GOOGLE_GENERATIVE_AI_API_KEY</span>
             </div>
           </div>
         </div>
@@ -79,7 +79,7 @@ export function DeploymentNotice() {
           <div className="flex items-center justify-between">
             <span className="text-xs text-[var(--text-muted)]">One-click deploy:</span>
             <a
-              href="https://vercel.com/new/clone?repository-url=https://github.com/your-repo/seq"
+              href="https://vercel.com/new/clone?repository-url=https://github.com/liusai0820/SteelMotion"
               target="_blank"
               rel="noopener noreferrer"
               className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-[var(--tertiary)] hover:bg-[var(--tertiary-hover)] text-white text-xs font-medium rounded transition-all"

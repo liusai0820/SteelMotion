@@ -19,7 +19,7 @@ export interface AutomatorSession {
   timestamp: number
 }
 
-const SESSION_KEY = "nano-banana-automator-session"
+const SESSION_KEY = "steelmotion-automator-session"
 
 export function saveSession(session: Partial<AutomatorSession>) {
   if (typeof window === "undefined") return

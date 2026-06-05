@@ -1,5 +1,7 @@
-import * as route from "@fal-ai/server-proxy"
+import { createRouteHandler } from "@fal-ai/server-proxy/nextjs"
 
+const route = createRouteHandler()
 
-export const POST = route.responsePassthrough
-export const GET = route.responsePassthrough
+export const GET = route.GET
+export const POST = route.POST
+export const PUT = route.PUT

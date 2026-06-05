@@ -11,6 +11,38 @@ import { Textarea } from "@/seq/components/ui/textarea"
 import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from "@/seq/components/ui/select"
 import { saveSession, loadSession } from "@/seq/lib/session-storage"
 import { DEMO_FINAL_SEQUENCE } from "@/seq/lib/demo-data"
+import type { CostLog, Generation, GenerationStatus } from "@/seq/lib/steelmotion/types"
+
+interface VideoGenerationResponse {
+  url?: string
+  status?: GenerationStatus
+  data?: {
+    video?: {
+      url?: string
+    }
+  }
+  generation?: Generation
+  costLog?: CostLog
+}
+
+function isRecord(value: unknown): value is Record<string, unknown> {
+  return typeof value === "object" && value !== null
+}
+
+function parseVideoGenerationResponse(value: unknown): VideoGenerationResponse {
+  if (!isRecord(value)) return {}
+
+  const data = isRecord(value.data) ? value.data : undefined
+  const video = data && isRecord(data.video) ? data.video : undefined
+
+  return {
+    url: typeof value.url === "string" ? value.url : undefined,
+    status: typeof value.status === "string" ? (value.status as GenerationStatus) : undefined,
+    data: video && typeof video.url === "string" ? { video: { url: video.url } } : undefined,
+    generation: isRecord(value.generation) ? (value.generation as unknown as Generation) : undefined,
+    costLog: isRecord(value.costLog) ? (value.costLog as unknown as CostLog) : undefined,
+  }
+}
 
 interface StoryboardContainerProps {
   panels?: StoryboardPanelData[]
@@ -37,6 +69,8 @@ export function StoryboardContainer({
   const [videoConfig, setVideoConfig] = useState<VideoConfig>({
     aspectRatio: "16:9",
     useFastModel: true,
+    provider: "vidu",
+    model: "vidu:viduq3-pro-fast",
   })
   const [isEnhancingMaster, setIsEnhancingMaster] = useState(false)
 
@@ -55,7 +89,9 @@ export function StoryboardContainer({
         prompt: initialPrompts?.[index] || "",
         duration: (initialDurations?.[index] || 5) as 5 | 3 | 8,
         videoUrl: savedVideoUrls[index],
-        model: initialLinkedPanelData?.[index] ? ("veo3.1-fast" as VideoModel) : ("veo3.1-fast" as VideoModel),
+        model: initialLinkedPanelData?.[index]
+          ? ("vidu:viduq3-pro-fast" as VideoModel)
+          : ("vidu:viduq3-pro-fast" as VideoModel),
         isGenerating: false,
       }))
       setPanels(newPanels)
@@ -98,7 +134,7 @@ export function StoryboardContainer({
     const panel = panels.find((p) => p.id === id)
     if (!panel) return
 
-    updatePanel(id, { isGenerating: true, error: undefined })
+    updatePanel(id, { isGenerating: true, error: undefined, generationStatus: "running" })
 
     try {
       const response = await fetch("/api/seq/generate-video", {
@@ -111,7 +147,8 @@ export function StoryboardContainer({
           aspectRatio: videoConfig.aspectRatio,
           duration: panel.duration,
           useFastModel: videoConfig.useFastModel,
-          model: panel.model,
+          model: panel.model || videoConfig.model,
+          provider: videoConfig.provider,
         }),
       })
 
@@ -120,11 +157,26 @@ export function StoryboardContainer({
         throw new Error(errorData.error || `HTTP ${response.status}`)
       }
 
-      const result = await response.json()
+      const result = parseVideoGenerationResponse(await response.json())
+      const videoUrl = result.url || result.data?.video?.url
 
-      if (result.data?.video?.url) {
-        updatePanel(id, { videoUrl: result.data.video.url, isGenerating: false })
+      if (videoUrl) {
+        updatePanel(id, {
+          videoUrl,
+          isGenerating: false,
+          generation: result.generation,
+          costLog: result.costLog,
+          generationStatus: result.status || "succeeded",
+        })
         toast.success("Video generated successfully!")
+      } else if (result.status === "queued" || result.status === "running") {
+        updatePanel(id, {
+          isGenerating: false,
+          generation: result.generation,
+          costLog: result.costLog,
+          generationStatus: result.status,
+        })
+        toast.info(`Generation ${result.status}`)
       } else {
         throw new Error("No video URL in response")
       }
@@ -165,7 +217,9 @@ export function StoryboardContainer({
           ...panel,
           prompt: demoPanel.prompt,
           duration: demoPanel.duration,
-          model: panel.linkedImageUrl ? ("veo3.1fast" as VideoModel) : ("veo3.1-fast" as VideoModel),
+          model: panel.linkedImageUrl
+            ? ("vidu:viduq3-pro-fast" as VideoModel)
+            : ("vidu:viduq3-pro-fast" as VideoModel),
           videoUrl: demoPanel.videoUrl,
         }
       }

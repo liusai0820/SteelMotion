@@ -7,6 +7,14 @@ import { Upload, X, Clock, Trash2, GripVertical, Wand2, Copy, Check } from "luci
 import { VIDEO_MODELS } from "../constants"
 import { useToastContext } from "@/seq/components/ui/sonner"
 import { PanelContainer, PanelHeader, PanelContent } from "./panel-primitives"
+import { STEEL_INDUSTRY_TEMPLATES, buildSteelStoryboardPrompt } from "@/seq/lib/steelmotion/templates"
+import type {
+  ClipDecision,
+  CostLog,
+  Generation,
+  GenerationStatus,
+  SteelIndustryTemplateId,
+} from "@/seq/lib/steelmotion/types"
 
 interface GeneratedItem {
   id: string
@@ -16,15 +24,28 @@ interface GeneratedItem {
   timestamp: number
   aspectRatio: string
   model: string
+  status: GenerationStatus
+  clipDecision: ClipDecision
+  generation?: Generation
+  costLog?: CostLog
+  failureCount: number
 }
 
 interface CreatePanelProps {
   onGenerate: (prompt: string, aspectRatio: string, type: "video" | "image", model: string, image?: string) => void
   isGenerating: boolean
   onClose: () => void
-  generatedItem: { url: string; type: "video" | "image" } | null
+  generatedItem: {
+    url: string
+    type: "video" | "image"
+    status?: GenerationStatus
+    generation?: Generation
+    costLog?: CostLog
+  } | null
   onAddToTimeline?: (url: string, type: "video" | "image") => void
 }
+
+const GENERATION_HISTORY_KEY = "steelmotion-generation-history"
 
 const Section = memo(function Section({
   title,
@@ -157,10 +178,24 @@ const ModelCard = memo(function ModelCard({
   )
 })
 
+function formatDuration(ms: number | undefined): string {
+  if (!ms) return "-"
+  if (ms < 1000) return `${ms} ms`
+  return `${(ms / 1000).toFixed(1)} s`
+}
+
+function formatCost(costLog: CostLog | undefined): string {
+  if (!costLog) return "-"
+  if (costLog.currency === "unknown") return costLog.amount > 0 ? `${costLog.amount}` : "-"
+  return `${costLog.amount} ${costLog.currency}`
+}
+
 const GenerationHistoryItem = memo(function GenerationHistoryItem({
   item,
   onUse,
   onDelete,
+  onRetry,
+  onDecisionChange,
   isDragging,
   onDragStart,
   onDragEnd,
@@ -168,6 +203,8 @@ const GenerationHistoryItem = memo(function GenerationHistoryItem({
   item: GeneratedItem
   onUse: () => void
   onDelete: () => void
+  onRetry: () => void
+  onDecisionChange: (decision: ClipDecision) => void
   isDragging?: boolean
   onDragStart?: () => void
   onDragEnd?: () => void
@@ -217,6 +254,12 @@ const GenerationHistoryItem = memo(function GenerationHistoryItem({
             <span className="text-[var(--text-faint)]">•</span>
             <span className="truncate">{item.model}</span>
           </div>
+          <div className="flex flex-wrap gap-x-2 gap-y-1 text-[10px] text-[var(--text-tertiary)]">
+            <span>{item.status}</span>
+            <span>{formatDuration(item.costLog?.durationMs || item.generation?.durationMs)}</span>
+            <span>{formatCost(item.costLog)}</span>
+            <span>fail {item.failureCount}</span>
+          </div>
         </div>
 
         {/* Actions */}
@@ -241,10 +284,46 @@ const GenerationHistoryItem = memo(function GenerationHistoryItem({
       {/* Use Button - visible on hover */}
       <button
         onClick={onUse}
-        className="absolute inset-x-0 bottom-0 py-1.5 bg-[var(--tertiary)] text-white text-[10px] font-bold uppercase tracking-wider opacity-0 group-hover:opacity-100 transition-opacity rounded-b-lg hover:bg-[var(--tertiary-hover)]"
+        disabled={!item.url}
+        className="w-full py-1.5 bg-[var(--tertiary)] text-white text-[10px] font-bold uppercase tracking-wider disabled:opacity-50 disabled:cursor-not-allowed hover:bg-[var(--tertiary-hover)]"
       >
-        Add to Timeline
+        {item.url ? "Add to Timeline" : "Queued"}
       </button>
+      <div className="flex gap-1 px-2.5 pb-2 pt-1">
+        <button
+          type="button"
+          onClick={() => onDecisionChange("keep")}
+          className={`flex-1 rounded border px-2 py-1 text-[10px] transition-colors ${
+            item.clipDecision === "keep"
+              ? "border-emerald-500/40 bg-emerald-500/15 text-emerald-300"
+              : "border-[var(--border-default)] text-[var(--text-tertiary)] hover:text-white"
+          }`}
+        >
+          Keep
+        </button>
+        <button
+          type="button"
+          onClick={onRetry}
+          className={`flex-1 rounded border px-2 py-1 text-[10px] transition-colors ${
+            item.clipDecision === "retry"
+              ? "border-amber-500/40 bg-amber-500/15 text-amber-300"
+              : "border-[var(--border-default)] text-[var(--text-tertiary)] hover:text-white"
+          }`}
+        >
+          Retry
+        </button>
+        <button
+          type="button"
+          onClick={() => onDecisionChange("discard")}
+          className={`flex-1 rounded border px-2 py-1 text-[10px] transition-colors ${
+            item.clipDecision === "discard"
+              ? "border-red-500/40 bg-red-500/15 text-red-300"
+              : "border-[var(--border-default)] text-[var(--text-tertiary)] hover:text-white"
+          }`}
+        >
+          Discard
+        </button>
+      </div>
     </div>
   )
 })
@@ -259,6 +338,7 @@ export const CreatePanel = memo(function CreatePanel({
   const [prompt, setPrompt] = useState("")
   const [aspectRatio, setAspectRatio] = useState("16:9")
   const [selectedModel, setSelectedModel] = useState<string>(VIDEO_MODELS[0].id)
+  const [selectedTemplate, setSelectedTemplate] = useState<SteelIndustryTemplateId>("automotive")
   const [imagePreview, setImagePreview] = useState<string | null>(null)
   const [history, setHistory] = useState<GeneratedItem[]>([])
   const [draggingId, setDraggingId] = useState<string | null>(null)
@@ -267,7 +347,7 @@ export const CreatePanel = memo(function CreatePanel({
 
   // Load history from localStorage on mount
   useEffect(() => {
-    const saved = localStorage.getItem("generation-history")
+    const saved = localStorage.getItem(GENERATION_HISTORY_KEY)
     if (saved) {
       try {
         setHistory(JSON.parse(saved))
@@ -286,14 +366,19 @@ export const CreatePanel = memo(function CreatePanel({
         timestamp: Date.now(),
         aspectRatio,
         model: selectedModel,
+        status: generatedItem.status || "succeeded",
+        clipDecision: generatedItem.status === "failed" ? "retry" : "keep",
+        generation: generatedItem.generation,
+        costLog: generatedItem.costLog,
+        failureCount: generatedItem.generation?.failureCount || generatedItem.costLog?.failureCount || 0,
       }
       setHistory((prev) => {
         const updated = [newItem, ...prev].slice(0, 20) // Keep last 20
-        localStorage.setItem("generation-history", JSON.stringify(updated))
+        localStorage.setItem(GENERATION_HISTORY_KEY, JSON.stringify(updated))
         return updated
       })
     }
-  }, [generatedItem])
+  }, [generatedItem, prompt, aspectRatio, selectedModel])
 
   const handleSubmit = useCallback(
     (e: React.FormEvent) => {
@@ -329,6 +414,7 @@ export const CreatePanel = memo(function CreatePanel({
 
   const handleUseHistoryItem = useCallback(
     (item: GeneratedItem) => {
+      if (!item.url) return
       onAddToTimeline?.(item.url, item.type)
     },
     [onAddToTimeline],
@@ -337,12 +423,42 @@ export const CreatePanel = memo(function CreatePanel({
   const handleDeleteHistoryItem = useCallback((id: string) => {
     setHistory((prev) => {
       const updated = prev.filter((item) => item.id !== id)
-      localStorage.setItem("generation-history", JSON.stringify(updated))
+      localStorage.setItem(GENERATION_HISTORY_KEY, JSON.stringify(updated))
       return updated
     })
   }, [])
 
-  const currentModel = VIDEO_MODELS.find((m) => m.id === selectedModel)
+  const handleRetryHistoryItem = useCallback(
+    (item: GeneratedItem) => {
+      setHistory((prev) => {
+        const updated = prev.map((historyItem) =>
+          historyItem.id === item.id
+            ? { ...historyItem, clipDecision: "retry" as ClipDecision, failureCount: historyItem.failureCount + 1 }
+            : historyItem,
+        )
+        localStorage.setItem(GENERATION_HISTORY_KEY, JSON.stringify(updated))
+        return updated
+      })
+      setPrompt(item.prompt)
+      setAspectRatio(item.aspectRatio)
+      setSelectedModel(item.model)
+      onGenerate(item.prompt, item.aspectRatio, item.type, item.model, imagePreview || undefined)
+    },
+    [imagePreview, onGenerate],
+  )
+
+  const handleDecisionChange = useCallback((id: string, clipDecision: ClipDecision) => {
+    setHistory((prev) => {
+      const updated = prev.map((item) => (item.id === id ? { ...item, clipDecision } : item))
+      localStorage.setItem(GENERATION_HISTORY_KEY, JSON.stringify(updated))
+      return updated
+    })
+  }, [])
+
+  const applySteelTemplate = useCallback((templateId: SteelIndustryTemplateId) => {
+    setSelectedTemplate(templateId)
+    setPrompt(buildSteelStoryboardPrompt(templateId, "SteelMotion"))
+  }, [])
 
   return (
     <PanelContainer>
@@ -368,6 +484,25 @@ export const CreatePanel = memo(function CreatePanel({
               className="w-full bg-[var(--surface-0)] border border-[var(--border-default)] rounded-lg px-3 py-2.5 text-sm text-[var(--text-primary)] placeholder:text-[var(--text-muted)] resize-none focus:outline-none focus:border-[var(--tertiary)] focus:ring-1 focus:ring-[var(--focus-ring)]"
             />
           </div>
+
+          <Section title="Steel Industry Templates">
+            <div className="grid grid-cols-2 gap-2">
+              {STEEL_INDUSTRY_TEMPLATES.map((template) => (
+                <button
+                  key={template.id}
+                  type="button"
+                  onClick={() => applySteelTemplate(template.id)}
+                  className={`rounded-lg border px-3 py-2 text-left text-xs transition-colors ${
+                    selectedTemplate === template.id
+                      ? "border-[var(--tertiary)] bg-[var(--tertiary-muted)] text-[var(--tertiary)]"
+                      : "border-[var(--border-default)] bg-[var(--hover-overlay)] text-[var(--text-secondary)] hover:text-white"
+                  }`}
+                >
+                  {template.name}
+                </button>
+              ))}
+            </div>
+          </Section>
 
           {/* Aspect Ratio */}
           <Section title="Aspect Ratio">
@@ -451,7 +586,7 @@ export const CreatePanel = memo(function CreatePanel({
               <button
                 onClick={() => {
                   setHistory([])
-                  localStorage.removeItem("generation-history")
+                  localStorage.removeItem(GENERATION_HISTORY_KEY)
                 }}
                 className="text-[10px] text-[var(--text-tertiary)] hover:text-[var(--error)] transition-colors"
               >
@@ -465,6 +600,8 @@ export const CreatePanel = memo(function CreatePanel({
                   item={item}
                   onUse={() => handleUseHistoryItem(item)}
                   onDelete={() => handleDeleteHistoryItem(item.id)}
+                  onRetry={() => handleRetryHistoryItem(item)}
+                  onDecisionChange={(decision) => handleDecisionChange(item.id, decision)}
                   isDragging={draggingId === item.id}
                   onDragStart={() => setDraggingId(item.id)}
                   onDragEnd={() => setDraggingId(null)}

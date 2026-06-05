@@ -1,7 +1,7 @@
 "use client"
 import { memo, useCallback, useState } from "react"
 import { SettingsIcon } from "./icons"
-import { ASPECT_RATIOS, PLAYBACK_CONSTANTS } from "../constants"
+import { ASPECT_RATIOS, PLAYBACK_CONSTANTS, STEELMOTION_EXPORT_TEMPLATES } from "../constants"
 import { clearAutosave, hasAutosave } from "../services/project-service"
 import {
   PanelContainer,
@@ -23,6 +23,7 @@ interface ProjectSettings {
   snapToGrid: boolean
   showWaveforms: boolean
   showThumbnails: boolean
+  exportTemplateId: string
 }
 
 interface SettingsPanelProps {
@@ -56,6 +57,7 @@ export const SettingsPanel = memo(function SettingsPanel({
     snapToGrid: projectSettings?.snapToGrid ?? true,
     showWaveforms: projectSettings?.showWaveforms ?? true,
     showThumbnails: projectSettings?.showThumbnails ?? true,
+    exportTemplateId: projectSettings?.exportTemplateId || STEELMOTION_EXPORT_TEMPLATES[0].id,
   })
 
   const updateSetting = useCallback(
@@ -96,6 +98,7 @@ export const SettingsPanel = memo(function SettingsPanel({
         snapToGrid: true,
         showWaveforms: true,
         showThumbnails: true,
+        exportTemplateId: STEELMOTION_EXPORT_TEMPLATES[0].id,
       }
       setSettings(defaults)
       onSettingsChange?.(defaults)
@@ -208,6 +211,32 @@ export const SettingsPanel = memo(function SettingsPanel({
             checked={settings.showThumbnails}
             onChange={(v) => updateSetting("showThumbnails", v)}
           />
+        </PanelSectionBordered>
+
+        {/* Export Template Section */}
+        <PanelSectionBordered
+          title="Export Template"
+          icon={<SettingsIcon className="w-4 h-4 text-sky-400" />}
+          defaultOpen={false}
+        >
+          <Select
+            label="Template"
+            value={settings.exportTemplateId}
+            options={STEELMOTION_EXPORT_TEMPLATES.map((template) => ({ value: template.id, label: template.name }))}
+            onChange={(v) => updateSetting("exportTemplateId", String(v))}
+          />
+
+          {STEELMOTION_EXPORT_TEMPLATES.filter((template) => template.id === settings.exportTemplateId).map(
+            (template) => (
+              <div key={template.id} className="space-y-2 text-[11px] text-neutral-400">
+                <p>Opener: {template.opener}</p>
+                <p>Closer: {template.closer}</p>
+                <p>Logo: {template.logo.enabled ? template.logo.position : "off"}</p>
+                <p>Watermark: {template.watermark.enabled ? template.watermark.text : "off"}</p>
+                <p>Subtitles: {template.subtitles.enabled ? template.subtitles.style : "off"}</p>
+              </div>
+            ),
+          )}
         </PanelSectionBordered>
 
         {/* Auto-Save Section */}
@@ -352,7 +381,7 @@ export const SettingsPanel = memo(function SettingsPanel({
 
         {/* Footer */}
         <div className="mt-auto pt-4 text-center border-t border-[var(--border-default)]">
-          <p className="text-[10px] text-neutral-600">Seq Video Editor v1.0.2</p>
+          <p className="text-[10px] text-neutral-600">SteelMotion Video Editor v1.0.0</p>
           <p className="text-[10px] text-neutral-700 mt-1">Built with Next.js & FFmpeg</p>
         </div>
       </PanelContent>

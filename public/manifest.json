@@ -1,7 +1,7 @@
 {
-  "name": "Seq AI Studio",
-  "short_name": "Seq",
-  "description": "AI-powered video creation and editing studio.",
+  "name": "SteelMotion",
+  "short_name": "SteelMotion",
+  "description": "AI-powered steel industry video generation studio.",
   "start_url": "/",
   "display": "standalone",
   "background_color": "#000000",

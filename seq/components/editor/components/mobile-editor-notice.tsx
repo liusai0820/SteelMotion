@@ -15,7 +15,7 @@ export function MobileEditorNotice() {
                 <div className="flex h-[500px] w-full max-w-[360px] flex-col overflow-hidden rounded-[32px] border border-border-secondary">
                   <div className="h-[60%]">
                     <img
-                      alt="Seq Studio Mobile"
+                      alt="SteelMotion Mobile"
                       className="h-full w-full object-cover object-bottom"
                       src="/images/studio_mobile_web.png"
                     />
@@ -33,7 +33,7 @@ export function MobileEditorNotice() {
                         lineHeight: "20px",
                       }}
                     >
-                      Seq Studio is currently desktop-only.
+                      SteelMotion is currently desktop-only.
                     </p>
                     <div className="mt-2 flex flex-shrink-0 flex-row gap-2">
                       <a

@@ -1,60 +1,36 @@
 export const DEMO_STORYBOARD = {
-  masterImageUrl: "/images/download-20-281-29.png",
-  masterDescription: 'A live-action flashback scene inspired by the "zoom out to the past" effect from Ratatouille.',
-  panelCount: 9,
+  masterImageUrl: "/placeholder.jpg",
+  masterDescription:
+    "SteelMotion automotive steel launch film: material -> processing -> product application -> component highlight -> brand close.",
+  panelCount: 5,
   panels: [
     {
-      imageUrl: "https://ijzqgoxsir9e5xch.public.blob.vercel-storage.com/nano-banana-1764019093771-dgm169.png",
-      prompt: "Man in modern cafe takes first bite of tart, eyes widen slightly with surprise",
-      duration: 3 as const,
-      aspectRatio: "16:9" as const,
-    },
-    {
-      imageUrl: "https://ijzqgoxsir9e5xch.public.blob.vercel-storage.com/nano-banana-1764019115301-8i4ia.png",
-      prompt: "Extreme close-up of eye with swirling transition effect, colors shift to warm sepia tones",
-      duration: 3 as const,
-      aspectRatio: "16:9" as const,
-    },
-    {
-      imageUrl: "https://ijzqgoxsir9e5xch.public.blob.vercel-storage.com/nano-banana-1764019136430-tlgsun.png",
-      prompt: "Wide shot of rustic kitchen, young boy eating at table with grandmother preparing food in background",
+      imageUrl: "/placeholder.jpg",
+      prompt: "材料：高强度冷轧钢卷在冷色工业灯光下展开，镜头贴近钢材纹理并缓慢推进",
       duration: 5 as const,
       aspectRatio: "16:9" as const,
     },
     {
-      imageUrl: "https://ijzqgoxsir9e5xch.public.blob.vercel-storage.com/nano-banana-1764019157951-gkhlqn.png",
-      prompt: "Close-up of boy's joyful face, mouth full of food, warm nostalgic lighting, pure happiness",
-      duration: 3 as const,
+      imageUrl: "/city-skyline-sunset.png",
+      prompt: "加工：自动化冲压、激光焊接和在线质检连续运转，机械臂动作稳定精准",
+      duration: 5 as const,
       aspectRatio: "16:9" as const,
     },
     {
-      imageUrl: "https://ijzqgoxsir9e5xch.public.blob.vercel-storage.com/nano-banana-1764019181130-fco6if.png",
-      prompt: "Swirling temporal transition effect, man and boy's faces blend together, zoom effect accelerates",
-      duration: 3 as const,
+      imageUrl: "/majestic-mountain-vista.png",
+      prompt: "产品应用：新能源车白车身在装配线上成型，钢结构轮廓被柔和高光勾勒",
+      duration: 5 as const,
       aspectRatio: "16:9" as const,
     },
     {
-      imageUrl:
-        "https://ijzqgoxsir9e5xch.public.blob.vercel-storage.com/nano-banana-pro-image-editing-result%20%2826%29.png",
-      prompt: "Man in present day, eyes glistening with tears, emotional realization washing over his face",
-      duration: 3 as const,
+      imageUrl: "/cinematic-forest-scene.jpg",
+      prompt: "部件高亮：A 柱、防撞梁和电池托盘依次发光标注，展示强度、轻量化和稳定性",
+      duration: 5 as const,
       aspectRatio: "16:9" as const,
     },
     {
-      imageUrl: "https://ijzqgoxsir9e5xch.public.blob.vercel-storage.com/sb-6.png",
-      prompt: "Close-up of boy's messy grin, food remnants on face, capturing pure childhood joy and innocence",
-      duration: 3 as const,
-      aspectRatio: "16:9" as const,
-    },
-    {
-      imageUrl: "https://ijzqgoxsir9e5xch.public.blob.vercel-storage.com/nano-banana-1764019246354-h8szr.png",
-      prompt: "Man looks down at the tart on his plate, processing the flood of memories, slow contemplative tilt",
-      duration: 3 as const,
-      aspectRatio: "16:9" as const,
-    },
-    {
-      imageUrl: "https://ijzqgoxsir9e5xch.public.blob.vercel-storage.com/nano-banana-1764019267745-a7c3lw.png",
-      prompt: "Man takes another contemplative bite, savoring both food and memory, camera slowly pushes in",
+      imageUrl: "/og-image.png",
+      prompt: "品牌收束：成品车驶出工厂，Logo、水印和字幕以干净工业风收尾",
       duration: 5 as const,
       aspectRatio: "16:9" as const,
     },
@@ -62,107 +38,84 @@ export const DEMO_STORYBOARD = {
 }
 
 export const DEMO_TRANSITION_STORYBOARD = {
-  transitionImageUrl: "/images/nano-banana-pro-image-editing-result-20-2824-29.png",
+  transitionImageUrl: "/placeholder.jpg",
   description:
-    "There are 2 transition panels. For transition 1, I need the first frame to be identical to the current transition panel except no warp effect and background should still be restaurant. For transition 2, the first frame should be very similar to the last frame from transition 1.",
+    "Create first-last-frame transitions between steel material close-ups, automated processing, product applications, component highlights, and brand close.",
   panelCount: 5,
   panels: [
     {
-      imageUrl: "https://ijzqgoxsir9e5xch.public.blob.vercel-storage.com/nano-banana-1764027246633-min6rg.png",
-      label: "Transition 1 - First Frame",
-      description: "Clean close-up of man's face in modern restaurant (no warp effect)",
+      imageUrl: "/placeholder.jpg",
+      label: "Material",
+      description: "High-strength steel coil close-up",
     },
     {
-      imageUrl: "https://ijzqgoxsir9e5xch.public.blob.vercel-storage.com/nano-banana-1764027269235-np18ja.png",
-      label: "Transition 1 - Last Frame",
-      description: "Boy eating in rustic kitchen with grandmother",
+      imageUrl: "/city-skyline-sunset.png",
+      label: "Processing",
+      description: "Stamping and laser welding line",
     },
     {
-      imageUrl: "https://ijzqgoxsir9e5xch.public.blob.vercel-storage.com/nano-banana-1764027293437-6yhya.png",
-      label: "Transition 2 - First Frame",
-      description: "Boy eating in kitchen (similar angle to transition 1 last frame)",
+      imageUrl: "/majestic-mountain-vista.png",
+      label: "Application",
+      description: "Automotive body-in-white application",
     },
     {
-      imageUrl: "https://ijzqgoxsir9e5xch.public.blob.vercel-storage.com/nano-banana-1764027315445-k5mqr4.png",
-      label: "Visual Reference",
-      description: "Warped overlay effect showing transition merge (for reference, not for video generation)",
+      imageUrl: "/cinematic-forest-scene.jpg",
+      label: "Component",
+      description: "Crash beam and battery tray highlight",
     },
     {
-      imageUrl:
-        "https://ijzqgoxsir9e5xch.public.blob.vercel-storage.com/nano-banana-pro-image-editing-result%20%2826%29.png",
-      label: "Transition 2 - Last Frame",
-      description: "Man in present day (clean frame for transition 2 ending)",
+      imageUrl: "/og-image.png",
+      label: "Brand",
+      description: "Logo, watermark, subtitle, and closing frame",
     },
   ],
 }
 
 export const DEMO_FINAL_SEQUENCE = {
-  masterDescription: 'A live-action flashback scene inspired by the "zoom out to the past" effect from Ratatouille.',
+  masterDescription:
+    "SteelMotion automotive steel template: high-strength material, automated processing, vehicle application, component highlight, and brand close.",
   videoConfig: {
     aspectRatio: "16:9" as const,
     useFastModel: true,
+    provider: "vidu" as const,
+    model: "vidu:viduq3-pro-fast" as const,
+    exportTemplateId: "steel-brand-standard",
   },
   panels: [
-    // Panel 0 - Regular panel
     {
-      imageUrl: "https://ijzqgoxsir9e5xch.public.blob.vercel-storage.com/nano-banana-1764019093771-dgm169.png",
-      prompt: "Cinematic close-up of the man eating pie, followed by a rapid, disorienting dolly-in to mid-face.",
-      duration: 8 as const,
+      imageUrl: "/placeholder.jpg",
+      prompt: "材料：高强度冷轧钢卷进入智能产线，镜头低角度推进，突出金属质感和稳定供应能力。",
+      duration: 5 as const,
       linkedImageUrl: undefined,
       videoUrl: "https://v3b.fal.media/files/b/0a84a235/Z9sIv_PFVXLU8uDcb9Hey_output.mp4",
     },
-    // Panel 1 - Transition (first frame: transition panel 0, last frame: main panel 2)
     {
-      imageUrl: "https://ijzqgoxsir9e5xch.public.blob.vercel-storage.com/nano-banana-1764027246633-min6rg.png",
-      linkedImageUrl: "https://ijzqgoxsir9e5xch.public.blob.vercel-storage.com/nano-banana-1764019136430-tlgsun.png",
-      prompt:
-        "Extreme close-up on the man's eye, rapidly accelerating into a blurring pullback zoom that transitions cinematically into a warm flashback sequence.",
+      imageUrl: "/city-skyline-sunset.png",
+      linkedImageUrl: "/majestic-mountain-vista.png",
+      prompt: "加工：冲压、激光焊接和在线质检连续切换，转场到新能源车白车身应用。",
       duration: 5 as const,
       videoUrl: "https://v3b.fal.media/files/b/monkey/D_Pf7zR9bbiKaRT6twClJ.mp4",
     },
-    // Panel 2 - Regular panel
     {
-      imageUrl: "https://ijzqgoxsir9e5xch.public.blob.vercel-storage.com/nano-banana-1764019136430-tlgsun.png",
-      prompt: "Wide shot of rustic kitchen, young boy eating at table with grandmother preparing food in background",
+      imageUrl: "/majestic-mountain-vista.png",
+      prompt: "产品应用：白车身在装配线上成型，镜头展示车身结构、底盘和电池包防护区域。",
       duration: 5 as const,
       linkedImageUrl: undefined,
       videoUrl: "https://v3b.fal.media/files/b/elephant/l8BSTRj_g7f-pFOfx7siq_TPl6daj3.mp4",
     },
-    // Panel 3 - Regular panel
     {
-      imageUrl: "https://ijzqgoxsir9e5xch.public.blob.vercel-storage.com/nano-banana-1764019157951-gkhlqn.png",
-      prompt: "Close-up of boy's joyful face, mouth full of food, warm nostalgic lighting, pure happiness",
+      imageUrl: "/cinematic-forest-scene.jpg",
+      prompt: "部件高亮：A 柱、防撞梁和电池托盘依次发光标注，字幕强调强度、轻量化和一致性。",
       duration: 5 as const,
       linkedImageUrl: undefined,
       videoUrl: "https://v3b.fal.media/files/b/panda/evoI_qve6jM04K-AeG4dd_TV3dmkaY.mp4",
     },
-    // Panel 4 - Transition (first frame: transition panel 2, last frame: transition panel 4)
     {
-      imageUrl: "https://ijzqgoxsir9e5xch.public.blob.vercel-storage.com/nano-banana-1764027293437-6yhya.png",
-      linkedImageUrl:
-        "https://ijzqgoxsir9e5xch.public.blob.vercel-storage.com/nano-banana-pro-image-editing-result%20%2826%29.png",
-      prompt:
-        "A cinematic wide-angle of the boy and his smiling grandmother, then rapidly accelerating into a blurring pullback zoom that transitions cinematically into a warmer present-day sequence.",
+      imageUrl: "/og-image.png",
+      prompt: "品牌收束：工厂全景、成品车和品牌 Logo 同屏，水印与字幕以工业风干净收尾。",
       duration: 5 as const,
-      videoUrl: "https://v3b.fal.media/files/b/monkey/ASI6U2FEsmr-xxQI9iAV0.mp4",
-    },
-    // Panel 5 - Regular panel
-    {
-      imageUrl:
-        "https://ijzqgoxsir9e5xch.public.blob.vercel-storage.com/nano-banana-pro-image-editing-result%20%2826%29.png",
-      prompt: "A cinematic close-up of the man's face at a restaurant as he recalls memories of childhood.",
-      duration: 8 as const,
       linkedImageUrl: undefined,
       videoUrl: "https://v3b.fal.media/files/b/rabbit/iS5IFUBwrTgZCqEdTZJJo_output.mp4",
-    },
-    // Panel 6 - Regular panel
-    {
-      imageUrl: "https://ijzqgoxsir9e5xch.public.blob.vercel-storage.com/nano-banana-1764019093771-dgm169.png",
-      prompt:
-        "Man in present day taking another bite of pie, savoring the memory and the moment, camera slowly pulls back.",
-      duration: 8 as const,
-      linkedImageUrl: undefined,
-      videoUrl: "https://v3b.fal.media/files/b/zebra/N6ZZnPbVVVpDx1ls0SjMQ_output.mp4",
     },
   ],
 }

@@ -7,7 +7,7 @@ export const DEMO_MEDIA: MediaItem[] = [
     id: "demo-video-1",
     url: "/cinematic-forest-scene.jpg",
     thumbnailUrl: "/forest-thumbnail.jpg",
-    prompt: "A cinematic forest scene with morning mist",
+    prompt: "High-strength steel coils entering an automotive stamping line",
     duration: 5,
     aspectRatio: "16:9",
     status: "ready",
@@ -18,7 +18,7 @@ export const DEMO_MEDIA: MediaItem[] = [
     id: "demo-video-2",
     url: "/ocean-waves-crashing.jpg",
     thumbnailUrl: "/ocean-thumbnail.jpg",
-    prompt: "Ocean waves crashing on rocky shore",
+    prompt: "Robotic welding and inspection for automotive steel components",
     duration: 6,
     aspectRatio: "16:9",
     status: "ready",
@@ -29,7 +29,7 @@ export const DEMO_MEDIA: MediaItem[] = [
     id: "demo-video-3",
     url: "/city-skyline-sunset.png",
     thumbnailUrl: "/city-thumbnail.jpg",
-    prompt: "City skyline at golden hour sunset",
+    prompt: "Finished vehicle body structure highlighting crash beam and battery tray",
     duration: 4,
     aspectRatio: "16:9",
     status: "ready",
@@ -75,7 +75,7 @@ export const DEMO_CLIPS: TimelineClip[] = [
 export const DEMO_STORYBOARD: StoryboardPanel[] = [
   {
     id: "demo-sb-1",
-    prompt: "A cinematic forest scene with morning mist filtering through ancient trees",
+    prompt: "材料：高强度冷轧钢卷进入汽车钢材智能产线，金属纹理清晰，镜头低角度推进",
     status: "idle",
     type: "scene",
     duration: 5,
@@ -83,7 +83,7 @@ export const DEMO_STORYBOARD: StoryboardPanel[] = [
   },
   {
     id: "demo-sb-2",
-    prompt: "Ocean waves crashing dramatically on rocky shore at sunrise",
+    prompt: "加工：冲压、激光焊接和在线质检同步运行，机械臂节奏稳定，真实工业光线",
     status: "idle",
     type: "scene",
     duration: 6,
@@ -91,7 +91,7 @@ export const DEMO_STORYBOARD: StoryboardPanel[] = [
   },
   {
     id: "demo-sb-3",
-    prompt: "City skyline transitioning from day to golden hour",
+    prompt: "品牌收束：白车身关键部件高亮，Logo 与可靠交付口号收尾",
     status: "idle",
     type: "scene",
     duration: 4,
@@ -100,4 +100,4 @@ export const DEMO_STORYBOARD: StoryboardPanel[] = [
 ]
 
 export const DEMO_MASTER_DESCRIPTION =
-  "A cinematic nature documentary sequence showcasing the beauty of landscapes - from misty forests to dramatic ocean scenes, ending with an urban sunset."
+  "SteelMotion automotive template: material -> processing -> product application -> component highlight -> brand close."

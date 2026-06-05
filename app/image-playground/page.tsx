@@ -3,9 +3,9 @@ import type { Metadata } from "next"
 import { AppShell } from "@/seq/components/app-shell"
 
 export const metadata: Metadata = {
-  title: "Image Playground - Seq",
+  title: "Image Playground - SteelMotion",
   description:
-    "AI-powered image generation and editing. Create stunning images from text, edit existing images with AI, and explore multiple aspect ratios. Powered by Google Gemini.",
+    "AI-powered image generation and editing for steel industry storyboard assets and product visuals.",
 }
 
 export default function Home() {

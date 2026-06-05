@@ -1,5 +1,5 @@
 {
-  "name": "02_SEQ",
-  "description": "A professional video generation and editing studio using Gemini Veo 3.1 models.",
+  "name": "SteelMotion Editor",
+  "description": "A steel industry video generation and editing studio with swappable video providers.",
   "requestFramePermissions": []
 }

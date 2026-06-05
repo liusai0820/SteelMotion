@@ -1,4 +1,14 @@
-export type VideoModel = "veo3.1-fast" | "veo3.1-standard" | "wan-2.5" | "wan-2.2-transition"
+import type { CostLog, Generation, GenerationStatus } from "@/seq/lib/steelmotion/types"
+
+export type VideoModel =
+  | "vidu:viduq3-pro-fast"
+  | "vidu:viduq3-pro"
+  | "vidu:viduq3-turbo"
+  | "fal:fal-ai/minimax-video"
+  | "fal:fal-ai/hunyuan-video"
+  | "fal:fal-ai/veo3.1/fast/image-to-video"
+  | "fal:fal-ai/wan-25-preview/image-to-video"
+  | "fal:fal-ai/wan/v2.2-a14b/image-to-video/turbo"
 
 export interface StoryboardPanelData {
   id: string
@@ -10,11 +20,17 @@ export interface StoryboardPanelData {
   isGenerating: boolean
   error?: string
   model?: VideoModel
+  generation?: Generation
+  costLog?: CostLog
+  generationStatus?: GenerationStatus
 }
 
 export interface VideoConfig {
   aspectRatio: "16:9" | "9:16"
   useFastModel: boolean
+  provider?: "vidu" | "fal"
+  model?: VideoModel
+  exportTemplateId?: string
 }
 
 export interface StoryboardState {
