@@ -1,4 +1,6 @@
 import { NextResponse } from "next/server"
+import { readFile } from "node:fs/promises"
+import { extname, resolve, sep } from "node:path"
 
 import { generateVideo, splitProviderModel, type VideoGenerationScene } from "@/seq/lib/steelmotion/providers"
 
@@ -72,6 +74,37 @@ function validateImageUrl(url: string | undefined, label: string): { error: stri
   }
 }
 
+function getImageMimeType(filePath: string): string {
+  const ext = extname(filePath).toLowerCase()
+  if (ext === ".jpg" || ext === ".jpeg") return "image/jpeg"
+  if (ext === ".png") return "image/png"
+  if (ext === ".webp") return "image/webp"
+  return "application/octet-stream"
+}
+
+async function localPublicImageToDataUri(url: string): Promise<string> {
+  const cleanPath = decodeURIComponent(url.split("?")[0]?.split("#")[0] || url)
+  const publicRoot = resolve(process.cwd(), "public")
+  const filePath = resolve(publicRoot, cleanPath.replace(/^\/+/, ""))
+
+  if (filePath !== publicRoot && !filePath.startsWith(`${publicRoot}${sep}`)) {
+    throw new Error("Local image path is outside public directory")
+  }
+
+  const image = await readFile(filePath)
+  return `data:${getImageMimeType(filePath)};base64,${image.toString("base64")}`
+}
+
+async function normalizeImageUrl(url: string | undefined, label: string): Promise<string | undefined> {
+  if (!url) return undefined
+  if (url.startsWith("https://") || url.startsWith("data:image/")) return url
+  if (url.startsWith("/")) return localPublicImageToDataUri(url)
+
+  const imageUrlError = validateImageUrl(url, label)
+  if (imageUrlError) throw new Error(imageUrlError.error)
+  return url
+}
+
 function normalizeProviderError(message: string): string {
   const lower = message.toLowerCase()
   if (lower.includes("content checker") || lower.includes("flagged") || lower.includes("could not be processed")) {
@@ -89,20 +122,25 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: "Prompt must be a non-empty string" }, { status: 400 })
     }
 
-    const imageUrlError = validateImageUrl(body.imageUrl, "image")
-    if (imageUrlError) {
-      return NextResponse.json(imageUrlError, { status: 400 })
-    }
-
-    const linkedImageUrlError = validateImageUrl(body.linkedImageUrl, "linked image")
-    if (linkedImageUrlError) {
-      return NextResponse.json(linkedImageUrlError, { status: 400 })
+    let imageUrl: string | undefined
+    let linkedImageUrl: string | undefined
+    try {
+      imageUrl = await normalizeImageUrl(body.imageUrl, "image")
+      linkedImageUrl = await normalizeImageUrl(body.linkedImageUrl, "linked image")
+    } catch (error: unknown) {
+      return NextResponse.json(
+        {
+          error: getErrorMessage(error),
+          details: "Supported formats: HTTPS URLs, data URIs (base64), or local files under /public.",
+        },
+        { status: 400 },
+      )
     }
 
     const scene: VideoGenerationScene = {
       prompt: body.prompt,
-      imageUrl: body.imageUrl,
-      linkedImageUrl: body.linkedImageUrl,
+      imageUrl,
+      linkedImageUrl,
       duration: body.duration,
       aspectRatio: body.aspectRatio,
       resolution: body.resolution,
