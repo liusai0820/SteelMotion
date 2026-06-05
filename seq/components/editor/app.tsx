@@ -3,6 +3,8 @@
 import type { MediaItem, StoryboardPanel, TimelineClip } from "./types"
 import dynamic from "next/dynamic"
 import { DEMO_FINAL_SEQUENCE } from "@/seq/lib/demo-data"
+import { loadSession } from "@/seq/lib/session-storage"
+import { STEELMOTION_DEMO_PANELS } from "@/seq/lib/steelmotion/test-assets"
 import { useRouter, useSearchParams } from "next/navigation"
 import { Suspense } from "react"
 import { useIsMobile } from "@/seq/hooks/use-is-mobile"
@@ -56,6 +58,67 @@ function createDemoData() {
 
 export { createDemoData }
 
+function getSessionEntries(videoUrls: Record<number, string> | undefined): Array<[number, string]> {
+  if (!videoUrls) return []
+  return Object.entries(videoUrls)
+    .map(([index, url]) => [Number(index), url] as [number, string])
+    .filter(([index, url]) => Number.isFinite(index) && url.trim().length > 0)
+    .sort(([a], [b]) => a - b)
+}
+
+function createGeneratedStoryboardData() {
+  const session = loadSession()
+  const entries = getSessionEntries(session?.videoUrls)
+  if (entries.length === 0) return null
+
+  const aspectRatio = session?.videoConfig?.aspectRatio || "16:9"
+  const initialMedia: MediaItem[] = entries.map(([index, url]) => {
+    const panel = STEELMOTION_DEMO_PANELS[index]
+    return {
+      id: `steelmotion-generated-media-${index}`,
+      url,
+      prompt: session?.prompts?.[index] || panel?.prompt || `SteelMotion 生成片段 ${index + 1}`,
+      duration: session?.durations?.[index] || 5,
+      aspectRatio,
+      status: "ready" as const,
+      type: "video" as const,
+      resolution: { width: 1920, height: 1080 },
+    }
+  })
+
+  const initialClips: TimelineClip[] = []
+  let startTime = 0
+  initialMedia.forEach((media) => {
+    initialClips.push({
+      speed: 1,
+      id: `steelmotion-generated-clip-${media.id}`,
+      mediaId: media.id,
+      trackId: "v1",
+      start: startTime,
+      duration: media.duration,
+      offset: 0,
+      volume: 1,
+    })
+    startTime += media.duration
+  })
+
+  const initialStoryboard: StoryboardPanel[] = entries.map(([index, url]) => {
+    const panel = STEELMOTION_DEMO_PANELS[index]
+    return {
+      id: `steelmotion-generated-storyboard-${index}`,
+      prompt: session?.prompts?.[index] || panel?.prompt || "",
+      imageUrl: panel?.imageUrl,
+      videoUrl: url,
+      mediaId: `steelmotion-generated-media-${index}`,
+      status: "idle" as const,
+      type: "scene" as const,
+      duration: (session?.durations?.[index] || 5) as 3 | 5 | 8,
+    }
+  })
+
+  return { initialMedia, initialClips, initialStoryboard }
+}
+
 function EditorContent() {
   const router = useRouter()
   const searchParams = useSearchParams()
@@ -67,7 +130,8 @@ function EditorContent() {
     return <MobileEditorNotice />
   }
 
-  const demoData = loadDemo ? createDemoData() : null
+  const generatedData = loadDemo ? null : createGeneratedStoryboardData()
+  const demoData = loadDemo ? createDemoData() : generatedData
 
   return (
     <Editor

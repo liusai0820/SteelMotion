@@ -15,6 +15,7 @@ import type { CostLog, Generation, GenerationStatus } from "@/seq/lib/steelmotio
 
 interface VideoGenerationResponse {
   url?: string
+  taskId?: string
   status?: GenerationStatus
   data?: {
     video?: {
@@ -43,6 +44,7 @@ function parseVideoGenerationResponse(value: unknown): VideoGenerationResponse {
 
   return {
     url: typeof value.url === "string" ? value.url : undefined,
+    taskId: typeof value.taskId === "string" ? value.taskId : undefined,
     status: typeof value.status === "string" ? (value.status as GenerationStatus) : undefined,
     data: video && typeof video.url === "string" ? { video: { url: video.url } } : undefined,
     generation: isRecord(value.generation) ? (value.generation as unknown as Generation) : undefined,
@@ -52,7 +54,7 @@ function parseVideoGenerationResponse(value: unknown): VideoGenerationResponse {
 
 interface StoryboardContainerProps {
   panels?: StoryboardPanelData[]
-  setPanels?: (panels: StoryboardPanelData[]) => void
+  setPanels?: React.Dispatch<React.SetStateAction<StoryboardPanelData[]>>
   initialPanels?: string[]
   linkedPanelData?: Record<number, string>
   prompts?: Record<number, string>
@@ -166,24 +168,72 @@ export function StoryboardContainer({
   useEffect(() => {
     if (panels.length > 0) {
       const videoUrls: Record<number, string> = {}
+      const taskIds: Record<number, string> = {}
+      const prompts: Record<number, string> = {}
+      const durations: Record<number, number> = {}
       panels.forEach((panel, index) => {
+        prompts[index] = panel.prompt
+        durations[index] = panel.duration || 5
         if (panel.videoUrl) {
           videoUrls[index] = panel.videoUrl
         }
+        if (panel.generation?.taskId) {
+          taskIds[index] = panel.generation.taskId
+        }
       })
 
-      if (Object.keys(videoUrls).length > 0) {
-        saveSession({ videoUrls })
-      }
+      saveSession({ prompts, durations, videoUrls, taskIds })
     }
   }, [panels])
 
   const updatePanel = (id: string, updates: Partial<StoryboardPanelData>) => {
-    setPanels(panels.map((p) => (p.id === id ? { ...p, ...updates } : p)))
+    setPanels((currentPanels) => currentPanels.map((p) => (p.id === id ? { ...p, ...updates } : p)))
   }
 
   const removePanel = (id: string) => {
-    setPanels(panels.filter((p) => p.id !== id))
+    setPanels((currentPanels) => currentPanels.filter((p) => p.id !== id))
+  }
+
+  const wait = (ms: number) => new Promise((resolve) => window.setTimeout(resolve, ms))
+
+  const pollVideoStatus = async (id: string, taskId: string, model?: string, provider?: string) => {
+    for (let attempt = 0; attempt < 60; attempt += 1) {
+      await wait(6000)
+
+      const params = new URLSearchParams({ taskId })
+      if (model) params.set("model", model)
+      if (provider) params.set("provider", provider)
+
+      const response = await fetch(`/api/seq/generate-video?${params.toString()}`)
+      const result = parseVideoGenerationResponse(await response.json())
+
+      if (!response.ok) {
+        throw new Error(getErrorMessage(result))
+      }
+
+      const videoUrl = result.url || result.data?.video?.url
+      if (videoUrl) {
+        updatePanel(id, {
+          videoUrl,
+          isGenerating: false,
+          generationStatus: "succeeded",
+        })
+        toast.success("视频已生成，并自动存入剪辑台素材库")
+        return
+      }
+
+      if (result.status === "failed") {
+        throw new Error("Vidu 任务生成失败")
+      }
+
+      updatePanel(id, {
+        isGenerating: true,
+        generationStatus: result.status || "running",
+      })
+    }
+
+    updatePanel(id, { isGenerating: false, generationStatus: "running" })
+    toast.info("Vidu 仍在生成中，稍后刷新页面会继续保留任务状态")
   }
 
   const generateVideo = async (id: string) => {
@@ -224,15 +274,21 @@ export function StoryboardContainer({
           costLog: result.costLog,
           generationStatus: result.status || "succeeded",
         })
-        toast.success("视频生成成功")
+        toast.success("视频已生成，并自动存入剪辑台素材库")
       } else if (result.status === "queued" || result.status === "running") {
+        const taskId = result.taskId || result.generation?.taskId
         updatePanel(id, {
-          isGenerating: false,
+          isGenerating: !!taskId,
           generation: result.generation,
           costLog: result.costLog,
           generationStatus: result.status,
         })
-        toast.info(`生成任务状态：${result.status}`)
+        if (taskId) {
+          toast.info("Vidu 任务已创建，正在等待生成结果...")
+          await pollVideoStatus(id, taskId, panel.model || videoConfig.model, videoConfig.provider)
+        } else {
+          toast.info(`生成任务状态：${result.status}`)
+        }
       } else {
         throw new Error("返回结果里没有视频地址")
       }

@@ -2,7 +2,12 @@ import { NextResponse } from "next/server"
 import { readFile } from "node:fs/promises"
 import { extname, resolve, sep } from "node:path"
 
-import { generateVideo, splitProviderModel, type VideoGenerationScene } from "@/seq/lib/steelmotion/providers"
+import {
+  generateVideo,
+  getVideoTaskStatus,
+  splitProviderModel,
+  type VideoGenerationScene,
+} from "@/seq/lib/steelmotion/providers"
 
 type VideoResolution = "540p" | "720p" | "1080p"
 
@@ -174,6 +179,34 @@ export async function POST(request: Request) {
       model: result.generation.model,
       generation: result.generation,
       costLog: result.costLog,
+      data: result.url ? { video: { url: result.url } } : undefined,
+      raw: result.raw,
+    })
+  } catch (error: unknown) {
+    const message = normalizeProviderError(getErrorMessage(error))
+    return NextResponse.json({ error: message }, { status: 500 })
+  }
+}
+
+export async function GET(request: Request) {
+  try {
+    const { searchParams } = new URL(request.url)
+    const taskId = searchParams.get("taskId")
+
+    if (!taskId) {
+      return NextResponse.json({ error: "taskId is required" }, { status: 400 })
+    }
+
+    const provider = splitProviderModel(
+      searchParams.get("model") || undefined,
+      searchParams.get("provider") || undefined,
+    )
+    const result = await getVideoTaskStatus(taskId, provider)
+
+    return NextResponse.json({
+      url: result.url,
+      taskId: result.taskId,
+      status: result.status,
       data: result.url ? { video: { url: result.url } } : undefined,
       raw: result.raw,
     })

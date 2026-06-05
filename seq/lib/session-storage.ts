@@ -14,6 +14,7 @@ export interface AutomatorSession {
   prompts?: Record<number, string>
   durations?: Record<number, number>
   videoUrls?: Record<number, string>
+  taskIds?: Record<number, string>
   masterDescription?: string
   videoConfig?: VideoConfig
   timestamp: number

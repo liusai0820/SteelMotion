@@ -29,6 +29,14 @@ export interface GenerateVideoResult {
   raw: unknown
 }
 
+export interface VideoTaskStatusResult {
+  url?: string
+  taskId: string
+  status: GenerationStatus
+  amount: number
+  raw: unknown
+}
+
 export const VIDEO_PROVIDERS: Provider[] = [
   {
     id: "vidu",
@@ -312,6 +320,75 @@ async function callVidu(scene: VideoGenerationScene, provider: VideoProviderRunt
   }
 
   return result
+}
+
+async function callViduTasks(pageToken?: string): Promise<unknown> {
+  const apiKey = process.env.VIDU_API_KEY
+  if (!apiKey) {
+    throw new Error("VIDU_API_KEY is not configured")
+  }
+
+  const baseUrl = process.env.VIDU_BASE_URL || "https://api.vidu.cn/ent/v2"
+  const query = pageToken ? `?page_token=${encodeURIComponent(pageToken)}` : ""
+  const response = await fetch(`${baseUrl}/tasks${query}`, {
+    method: "GET",
+    headers: {
+      Authorization: `Token ${apiKey}`,
+    },
+  })
+
+  const result: unknown = await response.json()
+  if (!response.ok) {
+    const message = getNestedString(result, ["message"]) || getNestedString(result, ["error"]) || response.statusText
+    throw new Error(message)
+  }
+
+  return result
+}
+
+function getTaskId(value: unknown): string | undefined {
+  return getNestedString(value, ["task_id"]) || getNestedString(value, ["id"])
+}
+
+async function findViduTask(taskId: string): Promise<unknown> {
+  let pageToken: string | undefined
+
+  for (let page = 0; page < 10; page += 1) {
+    const result = await callViduTasks(pageToken)
+    if (!isRecord(result)) return result
+
+    const tasks = result.tasks
+    if (Array.isArray(tasks)) {
+      const task = tasks.find((item) => getTaskId(item) === taskId)
+      if (task) return task
+    }
+
+    const nextPageToken = getNestedString(result, ["next_page_token"])
+    if (!nextPageToken) return { task_id: taskId, state: "queued", tasks }
+    pageToken = nextPageToken
+  }
+
+  return { task_id: taskId, state: "queued" }
+}
+
+export async function getVideoTaskStatus(
+  taskId: string,
+  provider: VideoProviderRuntime,
+): Promise<VideoTaskStatusResult> {
+  if (provider.id !== "vidu") {
+    throw new Error("Task polling is only implemented for Vidu")
+  }
+
+  const raw = await findViduTask(taskId)
+  const url = extractVideoUrl(raw)
+  const status = mapTaskStatus(raw, !!url)
+  return {
+    url,
+    taskId,
+    status,
+    amount: extractAmount(raw),
+    raw,
+  }
 }
 
 async function callFal(scene: VideoGenerationScene, provider: VideoProviderRuntime): Promise<unknown> {
