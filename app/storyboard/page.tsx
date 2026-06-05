@@ -72,7 +72,7 @@ export default function StoryboardPage() {
           </div>
         </section>
 
-        <section className="h-[620px] border-b border-border">
+        <section className="h-[760px] border-b border-border">
           <StoryboardContainer
             initialPanels={STEELMOTION_DEMO_PANELS.map((panel) => panel.imageUrl)}
             prompts={initialPrompts}

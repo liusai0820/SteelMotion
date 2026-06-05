@@ -10,8 +10,7 @@ import { useToastContext } from "@/seq/components/ui/sonner"
 import { useEffect, useState, useRef, useCallback } from "react"
 import { Textarea } from "@/seq/components/ui/textarea"
 import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from "@/seq/components/ui/select"
-import { saveSession, loadSession } from "@/seq/lib/session-storage"
-import { DEMO_FINAL_SEQUENCE } from "@/seq/lib/demo-data"
+import { saveSession, loadSession, clearSession } from "@/seq/lib/session-storage"
 import type { CostLog, Generation, GenerationStatus } from "@/seq/lib/steelmotion/types"
 
 interface VideoGenerationResponse {
@@ -61,6 +60,9 @@ interface StoryboardContainerProps {
   videoUrls?: Record<number, string>
 }
 
+const DEFAULT_MASTER_DESCRIPTION =
+  "真实工业广告片风格，冷色厂房灯光，镜头缓慢推进，突出裸钢材料质感、加工过程和最终汽车部件应用。无字幕，无配音，无音乐。"
+
 export function StoryboardContainer({
   panels: propPanels,
   setPanels: propSetPanels,
@@ -72,7 +74,7 @@ export function StoryboardContainer({
 }: StoryboardContainerProps) {
   const { toast } = useToastContext()
   const [internalPanels, setInternalPanels] = useState<StoryboardPanelData[]>([])
-  const [masterDescription, setMasterDescription] = useState("")
+  const [masterDescription, setMasterDescription] = useState(DEFAULT_MASTER_DESCRIPTION)
   const [videoConfig, setVideoConfig] = useState<VideoConfig>({
     aspectRatio: "16:9",
     useFastModel: true,
@@ -125,6 +127,16 @@ export function StoryboardContainer({
     if (initialPanels && initialPanels.length > 0) {
       const savedSession = loadSession()
       const savedVideoUrls = initialVideoUrls || savedSession?.videoUrls || {}
+      if (savedSession?.masterDescription) {
+        setMasterDescription(
+          savedSession.masterDescription.startsWith("SteelMotion automotive")
+            ? DEFAULT_MASTER_DESCRIPTION
+            : savedSession.masterDescription,
+        )
+      }
+      if (savedSession?.videoConfig) {
+        setVideoConfig(savedSession.videoConfig)
+      }
 
       const newPanels: StoryboardPanelData[] = initialPanels.map((url, index) => ({
         id: Math.random().toString(36).substring(7),
@@ -248,44 +260,6 @@ export function StoryboardContainer({
     await Promise.all(pendingPanels.map((p) => generateVideo(p.id)))
   }
 
-  const loadDemoData = () => {
-    const updatedPanels = panels.map((panel) => {
-      const demoPanel = DEMO_FINAL_SEQUENCE.panels.find(
-        (dp) =>
-          dp.imageUrl === panel.imageUrl &&
-          (panel.linkedImageUrl ? dp.linkedImageUrl === panel.linkedImageUrl : !dp.linkedImageUrl),
-      )
-
-      if (demoPanel) {
-        return {
-          ...panel,
-          prompt: demoPanel.prompt,
-          duration: demoPanel.duration,
-          model: panel.linkedImageUrl
-            ? ("vidu:viduq3-pro" as VideoModel)
-            : ("vidu:viduq3-pro" as VideoModel),
-          videoUrl: demoPanel.videoUrl,
-        }
-      }
-
-      return panel
-    })
-
-    setPanels(updatedPanels)
-    setMasterDescription(DEMO_FINAL_SEQUENCE.masterDescription)
-    setVideoConfig(DEMO_FINAL_SEQUENCE.videoConfig)
-
-    const matchedCount = updatedPanels.filter((p) =>
-      DEMO_FINAL_SEQUENCE.panels.some(
-        (dp) =>
-          dp.imageUrl === p.imageUrl &&
-          (p.linkedImageUrl ? dp.linkedImageUrl === p.linkedImageUrl : !dp.linkedImageUrl),
-      ),
-    ).length
-
-    toast.success(`已载入 ${matchedCount} 个示例分镜`)
-  }
-
   if (panels.length === 0) {
     return (
       <div className="w-full h-full flex flex-col items-center justify-center text-center bg-card">
@@ -386,26 +360,17 @@ export function StoryboardContainer({
             </p>
           </div>
 
-          {/* Action buttons in scrollable area */}
-          <div className="flex flex-col gap-2">
-            <Button
-              size="sm"
-              variant="outline"
-              className="w-full h-8 text-xs rounded-lg bg-transparent"
-              onClick={loadDemoData}
-            >
-              <Layers className="mr-1.5 h-3 w-3" />
-              载入示例数据
-            </Button>
-            <Button
-              size="sm"
-              variant="outline"
-              className="w-full h-8 text-xs rounded-lg bg-transparent"
-              onClick={() => setPanels([])}
-            >
-              清空全部
-            </Button>
-          </div>
+          <Button
+            size="sm"
+            variant="outline"
+            className="w-full h-8 text-xs rounded-lg bg-transparent"
+            onClick={() => {
+              clearSession()
+              window.location.reload()
+            }}
+          >
+            重置本页
+          </Button>
         </div>
 
         <div className="flex-shrink-0 p-4 border-t border-border space-y-2">
@@ -447,9 +412,9 @@ export function StoryboardContainer({
         </div>
 
         <ScrollArea className="flex-1 p-4">
-          <div className="flex w-max space-x-4 pb-4">
+          <div className="grid min-w-[640px] grid-cols-1 gap-4 pb-4 xl:grid-cols-3">
             {panels.map((panel, index) => (
-              <div key={panel.id} className="w-[280px] h-[420px] flex-none">
+              <div key={panel.id} className="min-h-[480px]">
                 <StoryboardPanel
                   panel={panel}
                   index={index}
@@ -463,12 +428,13 @@ export function StoryboardContainer({
             ))}
 
             {panels.length < 6 && (
-              <div className="w-[280px] h-[420px] flex-none rounded-lg border border-dashed border-border bg-card flex flex-col items-center justify-center text-center p-6 opacity-50 hover:opacity-100 transition-opacity cursor-help">
+              <div className="min-h-[220px] rounded-lg border border-dashed border-border bg-card flex flex-col items-center justify-center text-center p-6 opacity-50 hover:opacity-100 transition-opacity cursor-help xl:min-h-[480px]">
                 <p className="text-xs text-muted-foreground">可以继续添加图片作为新分镜</p>
               </div>
             )}
           </div>
           <ScrollBar orientation="horizontal" className="bg-muted/20" />
+          <ScrollBar orientation="vertical" className="bg-muted/20" />
         </ScrollArea>
       </div>
     </div>
