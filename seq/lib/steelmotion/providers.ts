@@ -271,7 +271,7 @@ async function callVidu(scene: VideoGenerationScene, provider: VideoProviderRunt
     throw new Error("VIDU_API_KEY is not configured")
   }
 
-  const baseUrl = process.env.VIDU_BASE_URL || "https://api.vidu.com/ent/v2"
+  const baseUrl = process.env.VIDU_BASE_URL || "https://api.vidu.cn/ent/v2"
   const headers = {
     "Content-Type": "application/json",
     Authorization: `Token ${apiKey}`,
